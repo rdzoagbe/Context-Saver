@@ -1,20 +1,36 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Context Saver
 
-# Run and deploy your AI Studio app
+A premium SaaS application to save and resume your work context instantly.
 
-This contains everything you need to run your app locally.
+## Environment Setup
 
-View your app in AI Studio: https://ai.studio/apps/cc02fcb1-0219-4ba8-bd6b-1633d32e8362
+To run this application, you need to set up your Firebase configuration using environment variables.
 
-## Run Locally
+1. Create a `.env` file in the root directory (copy from `.env.example`).
+2. Populate the following variables with your Firebase Web App configuration:
 
-**Prerequisites:**  Node.js
+```env
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+```
 
+**Important:** Never commit your `.env` file to version control. It is already included in `.gitignore`.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Features
+
+- **Session Management**: Save what you're doing, why you paused, and the exact next step.
+- **Firebase Auth**: Secure account creation and login.
+- **Cloud Sync**: Real-time synchronization across devices using Firestore.
+- **Premium Design**: Polished, modern SaaS aesthetic with dark mode support.
+- **Stripe Integration**: Easy upgrade path to Pro features.
+
+## Development
+
+```bash
+npm install
+npm run dev
+```

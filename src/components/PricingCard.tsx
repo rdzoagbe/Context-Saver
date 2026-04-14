@@ -1,4 +1,8 @@
+import React from 'react';
 import { Check, Sparkles } from 'lucide-react';
+import { Card } from './ui/Card';
+import { Button } from './ui/Button';
+import { Badge } from './ui/Badge';
 
 interface FeatureItem {
   text: string;
@@ -19,24 +23,25 @@ interface PricingCardProps {
 
 export function PricingCard({ title, price, description, features, highlight, onUpgrade, isCurrent, ctaLabel, footerNote }: PricingCardProps) {
   return (
-    <div className={`flex flex-col p-8 rounded-[2.5rem] border transition-all duration-300 ${
-      highlight 
-        ? 'bg-white dark:bg-gray-800 border-indigo-500 shadow-2xl scale-105 z-10 ring-4 ring-indigo-50 dark:ring-indigo-900/20' 
-        : 'bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 shadow-sm'
-    }`}>
+    <Card 
+      className={`flex flex-col h-full transition-all duration-300 ${
+        highlight 
+          ? 'scale-105 z-10 ring-4 ring-indigo-50 dark:ring-indigo-900/20 border-indigo-500 shadow-2xl' 
+          : ''
+      }`}
+    >
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h3>
         {highlight && (
-          <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-            <Sparkles className="w-3 h-3" />
+          <Badge variant="indigo" icon={Sparkles} size="xs">
             Most Popular
-          </span>
+          </Badge>
         )}
       </div>
       
       <div className="mb-6">
         <span className="text-4xl font-extrabold text-gray-900 dark:text-white">{price}</span>
-        {price.includes('€') && <span className="text-gray-500 dark:text-gray-400 ml-1">/month</span>}
+        {price.includes('€') && <span className="text-gray-500 dark:text-gray-400 ml-1 font-medium">/month</span>}
       </div>
       
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">
@@ -55,11 +60,9 @@ export function PricingCard({ title, price, description, features, highlight, on
                 <Check className={`w-3 h-3 ${comingSoon ? 'text-gray-400' : 'text-indigo-600 dark:text-indigo-400'}`} />
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <span>{text}</span>
+                <span className="font-medium">{text}</span>
                 {comingSoon && (
-                  <span className="text-[9px] font-bold uppercase tracking-widest bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700">
-                    Soon
-                  </span>
+                  <Badge variant="gray" size="xs">Soon</Badge>
                 )}
               </div>
             </li>
@@ -68,26 +71,22 @@ export function PricingCard({ title, price, description, features, highlight, on
       </ul>
       
       <div className="space-y-4">
-        <button
+        <Button
           onClick={onUpgrade}
           disabled={isCurrent}
-          className={`w-full py-4 rounded-2xl font-bold text-sm transition-all active:scale-95 ${
-            isCurrent
-              ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-default'
-              : highlight
-                ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-200 dark:shadow-none'
-                : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700'
-          }`}
+          variant={highlight ? 'primary' : 'outline'}
+          size="lg"
+          className="w-full"
         >
           {isCurrent ? 'Current Plan' : ctaLabel || 'Upgrade'}
-        </button>
+        </Button>
         
         {footerNote && (
-          <p className="text-[10px] text-center text-gray-400 dark:text-gray-500 italic">
+          <p className="text-[10px] text-center text-gray-400 dark:text-gray-500 italic leading-relaxed">
             {footerNote}
           </p>
         )}
       </div>
-    </div>
+    </Card>
   );
 }

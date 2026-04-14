@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { Plus, Search, Filter, Pin, Sparkles, Cloud } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Plus, Pin, Sparkles, Cloud, ArrowRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSessions } from '../hooks/useSessions';
 import { SessionCard } from '../components/SessionCard';
 import { SummaryStrip } from '../components/SummaryStrip';
@@ -10,6 +10,9 @@ import { SessionStatus } from '../types';
 import { FeatureGate } from '../components/FeatureGate';
 import { usePlan } from '../hooks/usePlan';
 import { useAuth } from '../hooks/useAuth';
+import { PageHeader } from '../components/ui/PageHeader';
+import { Button } from '../components/ui/Button';
+import { Card } from '../components/ui/Card';
 
 export function Home() {
   const { sessions, togglePin, updateStatus } = useSessions();
@@ -17,6 +20,7 @@ export function Home() {
   const { isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<SessionStatus | 'all'>('active');
+  const navigate = useNavigate();
 
   // Filter sessions based on search query and status
   const filteredSessions = useMemo(() => {
@@ -38,66 +42,62 @@ export function Home() {
 
   return (
     <div className="space-y-10">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">Dashboard</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1 font-medium">
-            Welcome back. Pick up exactly where you left off.
-          </p>
-        </div>
-        <Link
-          to="/create"
-          className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-indigo-600 text-white rounded-2xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 dark:shadow-none active:scale-95"
+      <PageHeader 
+        title="Dashboard" 
+        description="Welcome back. Pick up exactly where you left off."
+      >
+        <Button 
+          onClick={() => navigate('/create')}
+          icon={Plus}
+          size="lg"
         >
-          <Plus className="w-5 h-5" />
           New Session
-        </Link>
-      </div>
+        </Button>
+      </PageHeader>
 
       <SummaryStrip sessions={sessions} />
       
       {isFree && (
-        <Link 
-          to="/pricing"
-          className="block p-6 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-[2rem] text-white shadow-xl shadow-indigo-100 dark:shadow-none hover:scale-[1.01] transition-transform group"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
-                <Sparkles className="w-6 h-6" />
+        <Link to="/pricing" className="block group">
+          <Card className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:scale-[1.01] active:scale-[0.99] transition-all border-none">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
+                  <Sparkles className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="font-bold text-lg">Upgrade to Plus</p>
+                  <p className="text-indigo-100 text-sm">Unlock pinned sessions, smart reminders, and more.</p>
+                </div>
               </div>
-              <div>
-                <p className="font-bold text-lg">Upgrade to Plus</p>
-                <p className="text-indigo-100 text-sm">Unlock pinned sessions, smart reminders, and more.</p>
+              <div className="hidden sm:flex items-center gap-2 bg-white/20 px-4 py-2 rounded-xl text-sm font-bold group-hover:bg-white/30 transition-colors">
+                View Plans
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
-            <div className="hidden sm:block bg-white/20 px-4 py-2 rounded-xl text-sm font-bold group-hover:bg-white/30 transition-colors">
-              View Plans
-            </div>
-          </div>
+          </Card>
         </Link>
       )}
 
       {isPro && !isAuthenticated && (
-        <Link 
-          to="/signup"
-          className="block p-6 bg-indigo-50 dark:bg-indigo-900/20 rounded-[2rem] border border-indigo-100 dark:border-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors group"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-200 dark:shadow-none">
-                <Cloud className="w-6 h-6" />
+        <Link to="/signup" className="block group">
+          <Card variant="ghost" className="hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-200 dark:shadow-none">
+                  <Cloud className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="font-bold text-lg text-indigo-900 dark:text-indigo-100">Cloud Sync Available</p>
+                  <p className="text-indigo-700 dark:text-indigo-300 text-sm">Create account to sync across devices.</p>
+                </div>
               </div>
-              <div>
-                <p className="font-bold text-lg text-indigo-900 dark:text-indigo-100">Cloud Sync Available</p>
-                <p className="text-indigo-700 dark:text-indigo-300 text-sm">Create account to sync across devices.</p>
+              <div className="hidden sm:flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-sm">
+                Get Started
+                <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" />
               </div>
             </div>
-            <div className="hidden sm:flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-sm">
-              Get Started
-              <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" />
-            </div>
-          </div>
+          </Card>
         </Link>
       )}
 

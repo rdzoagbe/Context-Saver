@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { PricingCard } from '../components/PricingCard';
 import { usePlan } from '../hooks/usePlan';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ShieldCheck, Loader2 } from 'lucide-react';
-import { PlanType } from '../types';
+import { useNavigate, Link } from 'react-router-dom';
+import { ShieldCheck, Loader2, ChevronLeft } from 'lucide-react';
 import { redirectToCheckout, StripePlan } from '../config/stripe';
+import { PageHeader } from '../components/ui/PageHeader';
+import { Card } from '../components/ui/Card';
 
 export function Pricing() {
   const { currentPlan, downgrade } = usePlan();
@@ -19,21 +20,17 @@ export function Pricing() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-12 pb-20">
-      <div className="text-center space-y-4">
-        <button
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-indigo-600 transition-colors mb-4"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Go Back
-        </button>
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-          Simple, Transparent Pricing
-        </h1>
-        <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto font-medium">
-          Choose the plan that's right for your productivity workflow.
-        </p>
+      <div className="flex items-center gap-2 text-sm font-bold text-gray-500 dark:text-gray-400">
+        <Link to="/" className="hover:text-indigo-600 transition-colors">Dashboard</Link>
+        <ChevronLeft className="w-4 h-4 rotate-180" />
+        <span className="text-gray-900 dark:text-white">Pricing</span>
       </div>
+
+      <PageHeader 
+        title="Simple, Transparent Pricing" 
+        description="Choose the plan that's right for your productivity workflow."
+        className="text-center"
+      />
 
       {loadingPlan && (
         <div className="fixed inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center space-y-4">
@@ -96,7 +93,7 @@ export function Pricing() {
         />
       </div>
 
-      <div className="bg-indigo-50 dark:bg-indigo-900/20 rounded-[2.5rem] p-8 sm:p-12 text-center space-y-6 border border-indigo-100 dark:border-indigo-900/50">
+      <Card variant="ghost" padding="lg" className="text-center space-y-6 max-w-4xl mx-auto">
         <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white dark:bg-gray-800 shadow-sm text-indigo-600 dark:text-indigo-400 mb-2">
           <ShieldCheck className="w-6 h-6" />
         </div>
@@ -104,7 +101,7 @@ export function Pricing() {
         <p className="text-gray-500 dark:text-gray-400 max-w-xl mx-auto text-sm leading-relaxed">
           Your data is yours. We use industry-standard encryption for cloud sync, and your local data never leaves your device unless you choose to sync.
         </p>
-      </div>
+      </Card>
     </div>
   );
 }
