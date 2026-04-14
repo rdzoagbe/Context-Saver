@@ -1,149 +1,138 @@
-import React, { useState, useMemo } from 'react';
-import { useSessions } from '../hooks/useSessions';
-import { useTheme } from '../hooks/useTheme';
-import { SessionCard } from '../components/SessionCard';
-import { Search, Plus, Inbox, Sun, Moon, BarChart3, Calendar, Clock } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Plus, Search, Filter, Pin, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useSessions } from '../hooks/useSessions';
+import { SessionCard } from '../components/SessionCard';
+import { SummaryStrip } from '../components/SummaryStrip';
+import { SearchFilterBar } from '../components/SearchFilterBar';
+import { EmptyState } from '../components/EmptyState';
+import { SessionStatus } from '../types';
+import { FeatureGate } from '../components/FeatureGate';
+import { usePlan } from '../hooks/usePlan';
 
 export function Home() {
-  const { sessions } = useSessions();
-  const { theme, toggleTheme } = useTheme();
+  const { sessions, togglePin, updateStatus } = useSessions();
+  const { isFree } = usePlan();
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<SessionStatus | 'all'>('active');
 
+  // Filter sessions based on search query and status
   const filteredSessions = useMemo(() => {
-    const activeSessions = sessions.filter(s => s.status === 'active');
-    if (!searchQuery.trim()) return activeSessions;
-    const query = searchQuery.toLowerCase();
-    return activeSessions.filter(
-      (s) =>
-        s.title.toLowerCase().includes(query) ||
-        s.description.toLowerCase().includes(query) ||
-        s.nextStep.toLowerCase().includes(query) ||
-        s.category.toLowerCase().includes(query) ||
-        s.tags?.some((t) => t.toLowerCase().includes(query))
-    );
-  }, [sessions, searchQuery]);
+    return sessions.filter((session) => {
+      const matchesSearch = 
+        session.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        session.notes.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        session.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        session.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+      
+      const matchesStatus = statusFilter === 'all' || session.status === statusFilter;
+      
+      return matchesSearch && matchesStatus;
+    });
+  }, [sessions, searchQuery, statusFilter]);
 
-  // Summary Stats
-  const stats = useMemo(() => {
-    const active = sessions.filter(s => s.status === 'active');
-    const today = new Date().setHours(0, 0, 0, 0);
-    const resumableToday = active.filter(s => s.updatedAt >= today).length;
-    const lastUpdated = active.length > 0 
-      ? new Date(Math.max(...active.map(s => s.updatedAt))).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      : 'N/A';
-
-    return {
-      total: active.length,
-      resumableToday,
-      lastUpdated
-    };
-  }, [sessions]);
+  const pinnedSessions = filteredSessions.filter(s => s.pinned);
+  const otherSessions = filteredSessions.filter(s => !s.pinned);
 
   return (
-    <div className="space-y-8">
-      {/* Header Area */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+    <div className="space-y-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Dashboard</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Welcome back. You have {stats.total} tasks waiting for your focus.
+          <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">Dashboard</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1 font-medium">
+            Welcome back. Pick up exactly where you left off.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={toggleTheme}
-            className="p-2.5 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm"
-            title="Toggle Theme"
-          >
-            {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-          </button>
-          <Link
-            to="/create"
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 transition-all shadow-md hover:shadow-lg active:scale-95"
-          >
-            <Plus className="w-5 h-5" />
-            New Session
-          </Link>
-        </div>
+        <Link
+          to="/create"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-indigo-600 text-white rounded-2xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 dark:shadow-none active:scale-95"
+        >
+          <Plus className="w-5 h-5" />
+          New Session
+        </Link>
       </div>
 
-      {/* Summary Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-            <BarChart3 className="w-5 h-5" />
+      <SummaryStrip sessions={sessions} />
+      
+      {isFree && (
+        <Link 
+          to="/pricing"
+          className="block p-6 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-[2rem] text-white shadow-xl shadow-indigo-100 dark:shadow-none hover:scale-[1.01] transition-transform group"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="font-bold text-lg">Upgrade to Plus</p>
+                <p className="text-indigo-100 text-sm">Unlock pinned sessions, smart reminders, and more.</p>
+              </div>
+            </div>
+            <div className="hidden sm:block bg-white/20 px-4 py-2 rounded-xl text-sm font-bold group-hover:bg-white/30 transition-colors">
+              View Plans
+            </div>
           </div>
-          <div>
-            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Sessions</p>
-            <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
-          </div>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
-            <Calendar className="w-5 h-5" />
-          </div>
-          <div>
-            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Resumable Today</p>
-            <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.resumableToday}</p>
-          </div>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400">
-            <Clock className="w-5 h-5" />
-          </div>
-          <div>
-            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Last Updated</p>
-            <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.lastUpdated}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Search & Filter */}
-      <div className="relative group">
-        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <Search className="h-5 w-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
-        </div>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="block w-full pl-11 pr-4 py-3.5 border border-gray-200 dark:border-gray-700 rounded-2xl leading-5 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent sm:text-sm transition-all shadow-sm"
-          placeholder="Search by title, description, category or tags..."
-        />
-      </div>
-
-      {/* Session List */}
-      {filteredSessions.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredSessions.map((session) => (
-            <SessionCard key={session.id} session={session} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-20 px-4 bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 border-dashed shadow-sm">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gray-50 dark:bg-gray-700/50 mb-6">
-            <Inbox className="h-8 w-8 text-gray-300 dark:text-gray-500" />
-          </div>
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-            {searchQuery ? "No matches found" : "Ready to start saving context?"}
-          </h3>
-          <p className="text-gray-500 dark:text-gray-400 text-sm max-w-sm mx-auto mb-8">
-            {searchQuery
-              ? `We couldn't find any active sessions matching "${searchQuery}". Try a different search term.`
-              : "Capture your current state before you step away. Your future self will thank you."}
-          </p>
-          {!searchQuery && (
-            <Link
-              to="/create"
-              className="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all active:scale-95"
-            >
-              <Plus className="w-5 h-5" />
-              Capture Your First Context
-            </Link>
-          )}
-        </div>
+        </Link>
       )}
+
+      <div className="space-y-6">
+        <SearchFilterBar 
+          searchQuery={searchQuery} 
+          setSearchQuery={setSearchQuery}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+        />
+
+        {filteredSessions.length > 0 ? (
+          <div className="space-y-10">
+            <FeatureGate feature="pinned_sessions" inline>
+              {pinnedSessions.length > 0 && (
+                <section className="space-y-4">
+                  <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+                    <Pin className="w-4 h-4 fill-current" />
+                    <h2 className="text-xs font-bold uppercase tracking-widest">Pinned Sessions</h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {pinnedSessions.map((session) => (
+                      <SessionCard 
+                        key={session.id} 
+                        session={session} 
+                        onTogglePin={togglePin}
+                        onUpdateStatus={updateStatus}
+                      />
+                    ))}
+                  </div>
+                </section>
+              )}
+            </FeatureGate>
+
+            <section className="space-y-4">
+              {pinnedSessions.length > 0 && (
+                <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">All Sessions</h2>
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {otherSessions.map((session) => (
+                  <SessionCard 
+                    key={session.id} 
+                    session={session} 
+                    onTogglePin={togglePin}
+                    onUpdateStatus={updateStatus}
+                  />
+                ))}
+              </div>
+            </section>
+          </div>
+        ) : (
+          <EmptyState 
+            isSearch={searchQuery !== '' || statusFilter !== 'all'} 
+            onClearSearch={() => {
+              setSearchQuery('');
+              setStatusFilter('all');
+            }} 
+          />
+        )}
+      </div>
     </div>
   );
 }

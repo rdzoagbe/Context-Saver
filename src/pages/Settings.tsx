@@ -1,56 +1,118 @@
 import React, { useRef } from 'react';
 import { useTheme } from '../hooks/useTheme';
 import { useSessions } from '../hooks/useSessions';
-import { Moon, Sun, Download, Upload, Monitor, Trash2, AlertTriangle } from 'lucide-react';
+import { usePlan } from '../hooks/usePlan';
+import { Moon, Sun, Download, Upload, Monitor, Trash2, AlertTriangle, Sparkles, CreditCard } from 'lucide-react';
+import { exportImport } from '../utils/exportImport';
+import { PlanBadge } from '../components/PlanBadge';
+import { Link } from 'react-router-dom';
 
 export function Settings() {
   const { theme, toggleTheme } = useTheme();
-  const { exportSessions, importSessions, clearAllData } = useSessions();
+  const { sessions, importSessions, clearAllData } = useSessions();
+  const { currentPlan, isFree, upgrade, downgrade } = usePlan();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleExport = () => {
+    exportImport.exportToJson(sessions);
+  };
 
   const handleImportClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const content = event.target?.result as string;
-        const data = JSON.parse(content);
-        if (Array.isArray(data)) {
-          importSessions(data);
-          alert('Sessions imported successfully!');
-        } else {
-          alert('Invalid backup file format.');
-        }
-      } catch (error) {
-        console.error('Error parsing JSON:', error);
-        alert('Failed to parse backup file.');
-      }
-    };
-    reader.readAsText(file);
+    try {
+      const imported = await exportImport.importFromJson(file);
+      importSessions(imported);
+      alert('Sessions imported successfully!');
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Failed to import sessions.');
+    }
     
-    // Reset input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
+    <div className="max-w-3xl mx-auto space-y-8 pb-20">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Settings</h1>
-        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-          Manage your preferences and data.
+        <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">Settings</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1 font-medium">
+          Manage your account, preferences, and data.
         </p>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-gray-100 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+        {/* Plan Section */}
+        <div className="p-8 sm:p-10 border-b border-gray-100 dark:border-gray-700">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-indigo-500" />
+            Subscription
+          </h2>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-6 bg-gray-50 dark:bg-gray-900/50 rounded-3xl border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${!isFree ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500 dark:bg-gray-700'}`}>
+                {!isFree ? <Sparkles className="w-6 h-6" /> : <CreditCard className="w-6 h-6" />}
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-bold text-gray-900 dark:text-white capitalize">
+                    {currentPlan} Plan
+                  </p>
+                  <PlanBadge plan={currentPlan} size="sm" />
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {!isFree ? 'Active subscription' : 'Limited features'}
+                </p>
+              </div>
+            </div>
+            {!isFree ? (
+              <button
+                onClick={() => alert('Redirecting to Stripe Customer Portal...')}
+                className="px-5 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm"
+              >
+                Manage Subscription
+              </button>
+            ) : (
+              <Link
+                to="/pricing"
+                className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 dark:shadow-none"
+              >
+                Upgrade Plan
+              </Link>
+            )}
+          </div>
+
+          {/* Developer Fallback for Testing */}
+          <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-700">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-bold text-gray-900 dark:text-white">Simulate Pro access</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Developer tool to test feature gating without Stripe.</p>
+              </div>
+              <button
+                onClick={() => isFree ? upgrade('pro') : downgrade()}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                  !isFree ? 'bg-indigo-600' : 'bg-gray-200 dark:bg-gray-700'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    !isFree ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Appearance */}
+        <div className="p-8 sm:p-10 border-b border-gray-100 dark:border-gray-700">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
             <Monitor className="w-5 h-5 text-indigo-500" />
             Appearance
@@ -70,7 +132,8 @@ export function Settings() {
           </div>
         </div>
 
-        <div className="p-8 border-b border-gray-100 dark:border-gray-700">
+        {/* Data Management */}
+        <div className="p-8 sm:p-10 border-b border-gray-100 dark:border-gray-700">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
             <Download className="w-5 h-5 text-indigo-500" />
             Data Management
@@ -83,7 +146,7 @@ export function Settings() {
                 <p className="text-sm text-gray-500 dark:text-gray-400">Download all your sessions as a JSON file.</p>
               </div>
               <button
-                onClick={exportSessions}
+                onClick={handleExport}
                 className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm shrink-0"
               >
                 <Download className="w-4 h-4" />
@@ -114,7 +177,8 @@ export function Settings() {
           </div>
         </div>
 
-        <div className="p-8 bg-red-50/30 dark:bg-red-900/10">
+        {/* Danger Zone */}
+        <div className="p-8 sm:p-10 bg-red-50/30 dark:bg-red-900/10">
           <h2 className="text-lg font-bold text-red-600 dark:text-red-400 mb-6 flex items-center gap-2">
             <AlertTriangle className="w-5 h-5" />
             Danger Zone
