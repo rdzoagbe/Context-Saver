@@ -1,0 +1,1 @@
+class i{constructor(){this.isDev=!1}track(t,s){const e={event:t,properties:s||{},timestamp:new Date().toISOString()};this.isDev&&console.log(`[Analytics] ${t}`,e)}identify(t,s){this.isDev&&console.log(`[Analytics Identify] User: ${t}`,s)}}const a=new i;export{a};
