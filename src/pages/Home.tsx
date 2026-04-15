@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Plus, Pin, Sparkles, Cloud, ArrowRight, CheckCircle2, X } from 'lucide-react';
+import { Plus, Pin, Sparkles, Cloud, ArrowRight, CheckCircle2, X, AlertCircle } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useSessions } from '../hooks/useSessions';
+import { useSessions } from '../contexts/SessionContext';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { SessionCard } from '../components/SessionCard';
 import { SummaryStrip } from '../components/SummaryStrip';
@@ -17,9 +17,10 @@ import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { motion, AnimatePresence } from 'motion/react';
 import { Clock } from 'lucide-react';
+import { analytics } from '../services/analytics';
 
 export function Home() {
-  const { sessions, togglePin, updateStatus } = useSessions();
+  const { sessions, togglePin, updateStatus, isSyncing } = useSessions();
   const { isFree, isPro } = usePlan();
   const { isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
@@ -28,6 +29,8 @@ export function Home() {
   const location = useLocation();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useLocalStorage('context-saver-onboarding-completed', false);
+
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (location.state?.message) {
@@ -41,6 +44,26 @@ export function Home() {
       return () => clearTimeout(timer);
     }
   }, [location]);
+
+  const handleTogglePin = async (id: string) => {
+    try {
+      setError(null);
+      await togglePin(id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to pin session');
+      setTimeout(() => setError(null), 5000);
+    }
+  };
+
+  const handleUpdateStatus = async (id: string, status: SessionStatus) => {
+    try {
+      setError(null);
+      await updateStatus(id, status);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update status');
+      setTimeout(() => setError(null), 5000);
+    }
+  };
 
   // Filter sessions based on search query and status
   const filteredSessions = useMemo(() => {
@@ -97,6 +120,25 @@ export function Home() {
             </button>
           </motion.div>
         )}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="fixed top-24 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-white dark:bg-slate-800 px-6 py-4 rounded-2xl shadow-premium border border-rose-100 dark:border-rose-900/30"
+          >
+            <div className="w-8 h-8 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center text-rose-600 dark:text-rose-400">
+              <AlertCircle className="w-5 h-5" />
+            </div>
+            <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{error}</p>
+            <button 
+              onClick={() => setError(null)}
+              className="ml-4 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </motion.div>
+        )}
       </AnimatePresence>
 
       <PageHeader 
@@ -126,7 +168,11 @@ export function Home() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <Link to="/pricing" className="block group">
+          <Link 
+            to="/pricing" 
+            className="block group"
+            onClick={() => analytics.track('upgrade_prompt_clicked', { type: 'plus_banner' })}
+          >
             <Card className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:scale-[1.01] active:scale-[0.99] transition-all border-none relative overflow-hidden">
               <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
                 <Sparkles className="w-32 h-32" />
@@ -157,7 +203,11 @@ export function Home() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <Link to="/signup" className="block group">
+          <Link 
+            to="/signup" 
+            className="block group"
+            onClick={() => analytics.track('upgrade_prompt_clicked', { type: 'cloud_sync_banner' })}
+          >
             <Card variant="ghost" className="hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all duration-300 border-indigo-100 dark:border-indigo-900/50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-6">
@@ -187,7 +237,12 @@ export function Home() {
           setStatusFilter={setStatusFilter}
         />
 
-        {filteredSessions.length > 0 ? (
+        {isSyncing && sessions.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 space-y-4">
+            <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+            <p className="text-slate-500 dark:text-slate-400 font-medium">Syncing sessions...</p>
+          </div>
+        ) : filteredSessions.length > 0 ? (
           <div className="space-y-12">
             <FeatureGate feature="pinned_sessions" inline>
               {pinnedSessions.length > 0 && (
@@ -208,8 +263,8 @@ export function Home() {
                       <motion.div key={session.id} variants={item}>
                         <SessionCard 
                           session={session} 
-                          onTogglePin={togglePin}
-                          onUpdateStatus={updateStatus}
+                          onTogglePin={handleTogglePin}
+                          onUpdateStatus={handleUpdateStatus}
                         />
                       </motion.div>
                     ))}
@@ -237,8 +292,8 @@ export function Home() {
                   <motion.div key={session.id} variants={item}>
                     <SessionCard 
                       session={session} 
-                      onTogglePin={togglePin}
-                      onUpdateStatus={updateStatus}
+                      onTogglePin={handleTogglePin}
+                      onUpdateStatus={handleUpdateStatus}
                     />
                   </motion.div>
                 ))}

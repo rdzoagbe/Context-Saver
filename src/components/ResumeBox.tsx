@@ -3,9 +3,10 @@ import { Button } from './ui/Button';
 
 interface ResumeBoxProps {
   nextStep: string;
+  onResume?: () => void;
 }
 
-export function ResumeBox({ nextStep }: ResumeBoxProps) {
+export function ResumeBox({ nextStep, onResume }: ResumeBoxProps) {
   return (
     <div className="bg-indigo-600 dark:bg-indigo-500 rounded-2xl p-8 text-white shadow-lg relative overflow-hidden group">
       <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 group-hover:-rotate-12 transition-transform duration-700 ease-out">
@@ -26,6 +27,7 @@ export function ResumeBox({ nextStep }: ResumeBoxProps) {
           <Button 
             variant="secondary" 
             size="md" 
+            onClick={onResume}
             className="bg-white text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 border-0"
           >
             Mark as Resumed

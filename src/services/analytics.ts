@@ -4,7 +4,11 @@ type EventName =
   | 'session_created'
   | 'upgrade_clicked'
   | 'stripe_checkout_opened'
-  | 'plan_selected';
+  | 'plan_selected'
+  | 'landing_cta_clicked'
+  | 'trial_started'
+  | 'guest_mode_started'
+  | 'upgrade_prompt_clicked';
 
 interface EventProperties {
   [key: string]: any;

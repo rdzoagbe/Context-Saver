@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PricingCard } from '../components/PricingCard';
 import { usePlan } from '../hooks/usePlan';
+import { useAuth } from '../hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import { ShieldCheck, Loader2, ChevronLeft } from 'lucide-react';
 import { redirectToCheckout, StripePlan } from '../config/stripe';
@@ -12,17 +13,22 @@ import { analytics } from '../services/analytics';
 
 export function Pricing() {
   const { currentPlan, downgrade } = usePlan();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<StripePlan | null>(null);
 
   const handleUpgrade = (plan: StripePlan) => {
+    if (!user) {
+      navigate('/signup', { state: { message: 'Please create an account to upgrade.' } });
+      return;
+    }
     analytics.track('upgrade_clicked', { plan });
     analytics.track('plan_selected', { plan, timestamp: new Date().toISOString() });
     localStorage.setItem('last_selected_plan', plan);
     setLoadingPlan(plan);
     // Redirect to Stripe Checkout
     analytics.track('stripe_checkout_opened', { plan });
-    redirectToCheckout(plan);
+    redirectToCheckout(plan, user.uid);
   };
 
   return (
@@ -115,8 +121,12 @@ export function Pricing() {
           </p>
         </div>
         <div className="flex flex-wrap justify-center gap-4">
-          <Button variant="outline" size="md">Read Security Policy</Button>
-          <Button variant="ghost" size="md">Contact Support</Button>
+          <Link to="/security">
+            <Button variant="outline" size="md">Read Security Policy</Button>
+          </Link>
+          <a href="mailto:support@contextsaver.com">
+            <Button variant="ghost" size="md">Contact Support</Button>
+          </a>
         </div>
       </Card>
     </div>

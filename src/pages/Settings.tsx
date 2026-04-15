@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { useTheme } from '../hooks/useTheme';
-import { useSessions } from '../hooks/useSessions';
+import { useSessions } from '../contexts/SessionContext';
 import { usePlan } from '../hooks/usePlan';
 import { useAuth } from '../hooks/useAuth';
 import { signOut } from '../services/authService';
@@ -21,6 +21,8 @@ export function Settings() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
+  const [importMessage, setImportMessage] = React.useState<{type: 'success' | 'error', text: string} | null>(null);
+
   const handleExport = () => {
     exportImport.exportToJson(sessions);
   };
@@ -36,14 +38,16 @@ export function Settings() {
     try {
       const imported = await exportImport.importFromJson(file);
       importSessions(imported);
-      alert('Sessions imported successfully!');
+      setImportMessage({ type: 'success', text: 'Sessions imported successfully!' });
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Failed to import sessions.');
+      setImportMessage({ type: 'error', text: error instanceof Error ? error.message : 'Failed to import sessions.' });
     }
     
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+
+    setTimeout(() => setImportMessage(null), 5000);
   };
 
   const handleLogout = async () => {
@@ -52,6 +56,17 @@ export function Settings() {
       navigate('/');
     } catch (error) {
       console.error('Failed to log out:', error);
+    }
+  };
+
+  const handleClearAllData = async () => {
+    try {
+      await clearAllData();
+      setImportMessage({ type: 'success', text: 'All data cleared successfully.' });
+      setTimeout(() => setImportMessage(null), 5000);
+    } catch (error) {
+      setImportMessage({ type: 'error', text: error instanceof Error ? error.message : 'Failed to clear data.' });
+      setTimeout(() => setImportMessage(null), 5000);
     }
   };
 
@@ -144,9 +159,14 @@ export function Settings() {
               </div>
             </div>
             {!isFree ? (
-              <Button variant="outline" size="md" onClick={() => alert('Redirecting to Stripe Customer Portal...')}>
-                Manage Subscription
-              </Button>
+              <div className="flex flex-col items-end gap-2">
+                <Button variant="outline" size="md" disabled title="Customer portal coming soon">
+                  Manage Subscription
+                </Button>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Contact support to modify your plan.
+                </p>
+              </div>
             ) : (
               <Button size="md" onClick={() => navigate('/pricing')} icon={Sparkles}>
                 Upgrade Plan
@@ -270,6 +290,11 @@ export function Settings() {
           </div>
           
           <div className="space-y-4">
+            {importMessage && (
+              <div className={`p-4 rounded-xl text-sm font-medium ${importMessage.type === 'success' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'}`}>
+                {importMessage.text}
+              </div>
+            )}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800">
               <div className="space-y-1">
                 <p className="text-base font-semibold text-slate-900 dark:text-white">Export Data</p>
@@ -312,7 +337,7 @@ export function Settings() {
               <p className="text-base font-semibold text-slate-900 dark:text-white">Clear All Data</p>
               <p className="text-sm text-slate-500 dark:text-slate-400">Permanently delete all sessions from this device.</p>
             </div>
-            <Button variant="danger" size="md" icon={Trash2} onClick={clearAllData}>
+            <Button variant="danger" size="md" icon={Trash2} onClick={handleClearAllData}>
               Clear All Data
             </Button>
           </div>

@@ -50,6 +50,10 @@ service cloud.firestore {
              data.category is string && data.category.size() <= 50 &&
              data.currentTask is string && data.currentTask.size() <= 5000 &&
              data.nextStep is string && data.nextStep.size() <= 500 &&
+             (!('pauseReason' in data) || (data.pauseReason is string && data.pauseReason.size() <= 500)) &&
+             (!('notes' in data) || (data.notes is string && data.notes.size() <= 50000)) &&
+             (!('tags' in data) || (data.tags is list && data.tags.size() <= 50)) &&
+             (!('links' in data) || (data.links is list && data.links.size() <= 50)) &&
              data.priority in ['low', 'medium', 'high'] &&
              data.status in ['active', 'archived', 'done', 'blocked'] &&
              data.pinned is bool &&
@@ -63,6 +67,11 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read, write: if isOwner(userId) || isAdmin();
+      
+      match /billing/{document=**} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow write: if false;
+      }
       
       match /sessions/{sessionId} {
         allow read: if isOwner(userId) || isAdmin();

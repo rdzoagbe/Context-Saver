@@ -9,6 +9,8 @@ import { Layout } from './components/Layout';
 import { Home } from './pages/Home';
 import { Landing } from './pages/Landing';
 import { useTheme } from './hooks/useTheme';
+import { SessionProvider } from './contexts/SessionContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Lazy load heavy pages
 const CreateSession = lazy(() => import('./pages/CreateSession').then(module => ({ default: module.CreateSession })));
@@ -19,6 +21,7 @@ const Pricing = lazy(() => import('./pages/Pricing').then(module => ({ default: 
 const UpgradeSuccess = lazy(() => import('./pages/UpgradeSuccess').then(module => ({ default: module.UpgradeSuccess })));
 const Login = lazy(() => import('./pages/Login').then(module => ({ default: module.Login })));
 const Signup = lazy(() => import('./pages/Signup').then(module => ({ default: module.Signup })));
+const SecurityPolicy = lazy(() => import('./pages/SecurityPolicy').then(module => ({ default: module.SecurityPolicy })));
 
 // Loading fallback
 const PageLoader = () => (
@@ -31,25 +34,30 @@ function AppContent() {
   useTheme(); // Initialize theme
 
   return (
-    <HashRouter>
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          
-          <Route element={<Layout />}>
-            <Route path="/dashboard" element={<Home />} />
-            <Route path="/create" element={<CreateSession />} />
-            <Route path="/edit/:id" element={<EditSession />} />
-            <Route path="/session/:id" element={<SessionDetail />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/upgrade-success" element={<UpgradeSuccess />} />
-          </Route>
-        </Routes>
-      </Suspense>
-    </HashRouter>
+    <ErrorBoundary>
+      <HashRouter>
+        <SessionProvider>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              
+              <Route element={<Layout />}>
+                <Route path="/dashboard" element={<Home />} />
+                <Route path="/create" element={<CreateSession />} />
+                <Route path="/edit/:id" element={<EditSession />} />
+                <Route path="/session/:id" element={<SessionDetail />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/security" element={<SecurityPolicy />} />
+                <Route path="/upgrade-success" element={<UpgradeSuccess />} />
+              </Route>
+            </Routes>
+          </Suspense>
+        </SessionProvider>
+      </HashRouter>
+    </ErrorBoundary>
   );
 }
 

@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { UserPlan, PlanType, Feature } from '../types';
 import { FEATURES } from '../config/constants';
-import { planService } from '../services/planService';
+import { useAuth } from './useAuth';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '../services/firebase';
 
 const PLAN_FEATURES: Record<PlanType, Feature[]> = {
   free: [],
@@ -10,25 +12,45 @@ const PLAN_FEATURES: Record<PlanType, Feature[]> = {
 };
 
 export function usePlan() {
-  const [plan, setPlanState] = useState<UserPlan>(planService.getCurrentPlanSync());
+  const { user } = useAuth();
+  const [plan, setPlanState] = useState<UserPlan>({ type: 'free' });
 
   useEffect(() => {
-    // Validate subscription on mount
-    planService.validateSubscription().then(validatedPlan => {
-      setPlanState(validatedPlan);
-    });
-  }, []);
+    if (!user) {
+      setPlanState({ type: 'free' });
+      return;
+    }
+
+    const unsubscribe = onSnapshot(
+      doc(db, 'users', user.uid, 'billing', 'subscription'),
+      (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const status = data.status;
+          if (status === 'active' || status === 'trialing') {
+            setPlanState({ type: data.plan as PlanType, expiresAt: data.currentPeriodEnd });
+          } else {
+            setPlanState({ type: 'free' });
+          }
+        } else {
+          setPlanState({ type: 'free' });
+        }
+      },
+      (error) => {
+        console.error("Error fetching plan:", error);
+        setPlanState({ type: 'free' });
+      }
+    );
+
+    return () => unsubscribe();
+  }, [user]);
 
   const upgrade = useCallback(async (newPlan: PlanType) => {
-    const updatedPlan: UserPlan = { type: newPlan };
-    await planService.setPlan(updatedPlan);
-    setPlanState(updatedPlan);
+    // No-op locally, handled by Stripe webhook
   }, []);
 
   const downgrade = useCallback(async () => {
-    const updatedPlan: UserPlan = { type: 'free' };
-    await planService.setPlan(updatedPlan);
-    setPlanState(updatedPlan);
+    // No-op locally, handled by Stripe webhook
   }, []);
 
   const isFeatureEnabled = useCallback((feature: Feature): boolean => {

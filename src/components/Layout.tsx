@@ -4,10 +4,14 @@ import { usePlan } from '../hooks/usePlan';
 import { motion, AnimatePresence } from 'motion/react';
 import { PlanBadge } from './PlanBadge';
 import { SyncIndicator } from './SyncIndicator';
+import { QuickCapture } from './QuickCapture';
+import { MigrationModal } from './MigrationModal';
+import { useSessions } from '../contexts/SessionContext';
 
 export function Layout() {
   const location = useLocation();
   const { currentPlan, isFree } = usePlan();
+  const { migrationState, performMigration } = useSessions();
 
   const navItems = [
     { path: '/dashboard', icon: Home, label: 'Dashboard' },
@@ -123,6 +127,17 @@ export function Layout() {
           })}
         </div>
       </nav>
+      <QuickCapture />
+      <MigrationModal 
+        state={migrationState} 
+        onMigrate={performMigration} 
+        onDismiss={() => {
+          // In a real app, we might want to store that they dismissed it, 
+          // but for now, they can just refresh to see it again.
+          // We can just set migration state to done to hide it.
+          performMigration(false); // Discard local is essentially what happens if they dismiss and we don't migrate
+        }} 
+      />
     </div>
   );
 }

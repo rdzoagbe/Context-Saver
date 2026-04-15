@@ -13,8 +13,9 @@ export type StripePlan = keyof typeof STRIPE_LINKS;
 /**
  * Redirects the user to the Stripe Checkout page for the selected plan.
  * @param plan - The plan to redirect to ('plus' or 'pro')
+ * @param userId - The Firebase user ID to associate with the checkout session
  */
-export function redirectToCheckout(plan: StripePlan) {
+export function redirectToCheckout(plan: StripePlan, userId?: string) {
   const url = STRIPE_LINKS[plan];
   
   if (!url) {
@@ -24,8 +25,9 @@ export function redirectToCheckout(plan: StripePlan) {
 
   console.log(`[Stripe] Redirecting to checkout for plan: ${plan}`);
   
-  // In a real app, we might append client_reference_id or user email here
-  // window.location.href = `${url}?client_reference_id=${userId}`;
-  
-  window.location.href = url;
+  if (userId) {
+    window.location.href = `${url}?client_reference_id=${userId}`;
+  } else {
+    window.location.href = url;
+  }
 }

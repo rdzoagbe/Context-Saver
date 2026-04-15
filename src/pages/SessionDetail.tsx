@@ -19,7 +19,7 @@ import {
   MoreVertical,
   FileQuestion
 } from 'lucide-react';
-import { useSessions } from '../hooks/useSessions';
+import { useSessions } from '../contexts/SessionContext';
 import { SessionStatus, Priority } from '../types';
 import { ResumeBox } from '../components/ResumeBox';
 import { FeatureGate } from '../components/FeatureGate';
@@ -46,11 +46,20 @@ const statusConfig: Record<SessionStatus, { icon: any; variant: 'indigo' | 'rose
 export function SessionDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { sessions, deleteSession, duplicateSession, updateStatus, togglePin } = useSessions();
+  const { sessions, deleteSession, duplicateSession, updateStatus, togglePin, isSyncing } = useSessions();
+  const [error, setError] = React.useState<string | null>(null);
 
   const session = sessions.find((s) => s.id === id);
 
   if (!session) {
+    if (isSyncing) {
+      return (
+        <div className="flex flex-col items-center justify-center py-40 space-y-4">
+          <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">Loading session...</p>
+        </div>
+      );
+    }
     return (
       <div className="py-20">
         <EmptyState
@@ -66,32 +75,67 @@ export function SessionDetail() {
     );
   }
 
+  const handleError = (err: unknown, defaultMessage: string) => {
+    setError(err instanceof Error ? err.message : defaultMessage);
+    setTimeout(() => setError(null), 5000);
+  };
+
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this session?')) {
-      await deleteSession(session.id);
-      navigate('/dashboard');
+      try {
+        await deleteSession(session.id);
+        navigate('/dashboard');
+      } catch (err) {
+        handleError(err, 'Failed to delete session');
+      }
     }
   };
 
   const handleDuplicate = async () => {
-    const newSession = await duplicateSession(session.id);
-    if (newSession) {
-      navigate(`/session/${newSession.id}`);
+    try {
+      const newSession = await duplicateSession(session.id);
+      if (newSession) {
+        navigate(`/session/${newSession.id}`);
+      }
+    } catch (err) {
+      handleError(err, 'Failed to duplicate session');
     }
   };
 
   const handleMarkDone = async () => {
-    await updateStatus(session.id, 'done');
+    try {
+      await updateStatus(session.id, 'done');
+    } catch (err) {
+      handleError(err, 'Failed to update status');
+    }
   };
 
   const handleArchive = async () => {
-    await updateStatus(session.id, session.status === 'archived' ? 'active' : 'archived');
+    try {
+      await updateStatus(session.id, session.status === 'archived' ? 'active' : 'archived');
+    } catch (err) {
+      handleError(err, 'Failed to archive session');
+    }
+  };
+
+  const handleTogglePin = async () => {
+    try {
+      await togglePin(session.id);
+    } catch (err) {
+      handleError(err, 'Failed to pin session');
+    }
   };
 
   const StatusIcon = statusConfig[session.status].icon;
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-20">
+      {error && (
+        <div className="p-4 bg-rose-50 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-900/50 rounded-xl flex items-center gap-3 text-rose-700 dark:text-rose-400">
+          <AlertCircle className="w-5 h-5 flex-shrink-0" />
+          <p className="text-sm font-medium">{error}</p>
+        </div>
+      )}
       <div className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
         <Link to="/dashboard" className="hover:text-indigo-600 transition-colors">Dashboard</Link>
         <ChevronRight className="w-4 h-4" />
@@ -105,7 +149,7 @@ export function SessionDetail() {
               variant="outline"
               size="sm"
               icon={session.pinned ? PinOff : Pin}
-              onClick={() => togglePin(session.id)}
+              onClick={handleTogglePin}
               title={session.pinned ? "Unpin" : "Pin"}
             >
               {session.pinned ? 'Unpin' : 'Pin'}
@@ -173,7 +217,7 @@ export function SessionDetail() {
             )}
           </Card>
 
-          <ResumeBox nextStep={session.nextStep} />
+          <ResumeBox nextStep={session.nextStep} onResume={handleMarkDone} />
 
           <div className="flex flex-wrap gap-4">
             {session.status !== 'done' && (

@@ -4,6 +4,7 @@ import { Lock, Sparkles } from 'lucide-react';
 import { usePlan } from '../hooks/usePlan';
 import { Feature } from '../types';
 import { Button } from './ui/Button';
+import { analytics } from '../services/analytics';
 
 interface FeatureGateProps {
   feature: Feature;
@@ -27,6 +28,7 @@ export function FeatureGate({ feature, children, fallback, inline = false }: Fea
     return (
       <Link 
         to="/pricing"
+        onClick={() => analytics.track('upgrade_prompt_clicked', { feature, type: 'inline' })}
         className="inline-flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 font-semibold text-xs bg-indigo-50 dark:bg-indigo-900/20 px-2.5 py-1 rounded-md border border-indigo-100 dark:border-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors"
       >
         <Lock className="w-3 h-3" />
@@ -55,6 +57,7 @@ export function FeatureGate({ feature, children, fallback, inline = false }: Fea
           to="/pricing"
           size="sm"
           className="px-6"
+          onClick={() => analytics.track('upgrade_prompt_clicked', { feature, type: 'block' })}
         >
           View Plans
         </Button>

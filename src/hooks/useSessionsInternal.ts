@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useLocalStorage } from './useLocalStorage';
+import localforage from 'localforage';
 import { Session, SessionStatus } from '../types';
 import { sessionMigrations } from '../utils/sessionMigrations';
 import { storage } from '../utils/storage';
 import { useAuth } from './useAuth';
 import { usePlan } from './usePlan';
-import { subscribeToSessions, saveSessionToCloud, deleteSessionFromCloud } from '../services/sessionService';
+import { subscribeToSessions, saveSessionToCloud, deleteSessionFromCloud, migrateSessionsToCloud, clearAllCloudSessions } from '../services/sessionService';
 
 const STORAGE_KEY = 'context-saver-sessions';
 
@@ -28,41 +28,139 @@ const SAMPLE_DATA: Session[] = [
   }
 ];
 
-export function useSessions() {
+export type MigrationState = 'idle' | 'checking' | 'prompt_merge' | 'migrating' | 'done';
+
+export function useSessionsInternal() {
   const { user, isAuthenticated } = useAuth();
   const { isPro } = usePlan();
-  const [localSessions, setLocalSessions] = useLocalStorage<Session[]>(STORAGE_KEY, []);
+  
+  const [localSessions, setLocalSessionsState] = useState<Session[]>([]);
   const [cloudSessions, setCloudSessions] = useState<Session[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [cloudSessionsLoaded, setCloudSessionsLoaded] = useState(false);
+  const [localSessionsLoaded, setLocalSessionsLoaded] = useState(false);
+
+  // Migration state
+  const [migrationState, setMigrationState] = useState<MigrationState>('idle');
+  const [hasMigrated, setHasMigratedState] = useState(false);
+
+  // Helper to set local sessions in state and localforage
+  const setLocalSessions = useCallback(async (sessionsOrUpdater: Session[] | ((prev: Session[]) => Session[])) => {
+    setLocalSessionsState(prev => {
+      const newSessions = typeof sessionsOrUpdater === 'function' ? sessionsOrUpdater(prev) : sessionsOrUpdater;
+      localforage.setItem(STORAGE_KEY, newSessions).catch(console.error);
+      return newSessions;
+    });
+  }, []);
+
+  // Helper to set migrated state
+  const setHasMigrated = useCallback(async (migrated: boolean) => {
+    setHasMigratedState(migrated);
+    if (user?.uid) {
+      await localforage.setItem(`context-saver-migrated-${user.uid}`, migrated).catch(console.error);
+    }
+  }, [user?.uid]);
+
+  // Load initial local data
+  useEffect(() => {
+    const loadLocalData = async () => {
+      try {
+        const storedSessions = await localforage.getItem<Session[]>(STORAGE_KEY);
+        if (storedSessions) {
+          setLocalSessionsState(storedSessions);
+        }
+        
+        if (user?.uid) {
+          const migrated = await localforage.getItem<boolean>(`context-saver-migrated-${user.uid}`);
+          if (migrated !== null) {
+            setHasMigratedState(migrated);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load local data', error);
+      } finally {
+        setLocalSessionsLoaded(true);
+      }
+    };
+    loadLocalData();
+  }, [user?.uid]);
 
   // Cloud sync is only for Pro users who are logged in
   const canSync = isAuthenticated && isPro;
 
-  // Source of truth depends on sync capability
+  // Source of truth depends on sync capability and migration state
   const sessions = canSync ? cloudSessions : localSessions;
 
   // Initialize with sample data if empty and not syncing
   useEffect(() => {
-    if (!canSync && localSessions.length === 0 && !storage.get('has-initialized', false)) {
+    if (localSessionsLoaded && !canSync && localSessions.length === 0 && !storage.get('has-initialized', false)) {
       setLocalSessions(SAMPLE_DATA);
       storage.set('has-initialized', true);
     }
-  }, [canSync, localSessions.length, setLocalSessions]);
+  }, [canSync, localSessions.length, setLocalSessions, localSessionsLoaded]);
 
   // Subscribe to cloud sessions when syncing is enabled
   useEffect(() => {
     if (canSync && user) {
       setIsSyncing(true);
-      const unsubscribe = subscribeToSessions(user.uid, (sessions) => {
+      const unsubscribe = subscribeToSessions(user.uid, 50, (sessions) => {
         setCloudSessions(sessions);
+        setCloudSessionsLoaded(true);
         setIsSyncing(false);
       });
-      return () => unsubscribe();
+      return () => {
+        unsubscribe();
+        setCloudSessionsLoaded(false);
+      };
     } else {
       setCloudSessions([]);
+      setCloudSessionsLoaded(false);
       setIsSyncing(false);
     }
   }, [canSync, user]);
+
+  // Migration Logic
+  useEffect(() => {
+    if (canSync && user && cloudSessionsLoaded && !hasMigrated && migrationState === 'idle') {
+      setMigrationState('checking');
+      
+      if (localSessions.length === 0) {
+        // Nothing to migrate
+        setHasMigrated(true);
+        setMigrationState('done');
+      } else if (cloudSessions.length === 0) {
+        // Auto migrate
+        setMigrationState('migrating');
+        migrateSessionsToCloud(user.uid, localSessions).then(() => {
+          setLocalSessions([]);
+          setHasMigrated(true);
+          setMigrationState('done');
+        }).catch(err => {
+          console.error("Auto migration failed", err);
+          setMigrationState('prompt_merge'); // Fallback to prompt if auto fails
+        });
+      } else {
+        // Both exist, prompt user
+        setMigrationState('prompt_merge');
+      }
+    }
+  }, [canSync, user, cloudSessionsLoaded, hasMigrated, localSessions, cloudSessions.length, migrationState, setHasMigrated, setLocalSessions]);
+
+  const performMigration = useCallback(async (merge: boolean) => {
+    if (!user) return;
+    setMigrationState('migrating');
+    try {
+      if (merge) {
+        await migrateSessionsToCloud(user.uid, localSessions);
+      }
+      setLocalSessions([]);
+      setHasMigrated(true);
+      setMigrationState('done');
+    } catch (error) {
+      console.error("Migration failed", error);
+      setMigrationState('prompt_merge');
+    }
+  }, [user, localSessions, setLocalSessions, setHasMigrated]);
 
   const addSession = useCallback(async (sessionData: Omit<Session, 'id' | 'createdAt' | 'updatedAt'>) => {
     const newSession: Session = {
@@ -164,11 +262,7 @@ export function useSessions() {
       if (canSync && user) {
         window.dispatchEvent(new Event('sync-start'));
         try {
-          // For cloud, we'd need to delete each one or have a batch delete
-          // For simplicity in this first version, let's just delete them one by one
-          for (const session of cloudSessions) {
-            await deleteSessionFromCloud(user.uid, session.id);
-          }
+          await clearAllCloudSessions(user.uid);
         } finally {
           window.dispatchEvent(new Event('sync-end'));
         }
@@ -176,16 +270,14 @@ export function useSessions() {
         setLocalSessions([]);
       }
     }
-  }, [canSync, user, cloudSessions, setLocalSessions]);
+  }, [canSync, user, setLocalSessions]);
 
   const importSessions = useCallback(async (importedSessions: any[]) => {
     const migrated = sessionMigrations.migrate(importedSessions);
     if (canSync && user) {
       window.dispatchEvent(new Event('sync-start'));
       try {
-        for (const session of migrated) {
-          await saveSessionToCloud(user.uid, session);
-        }
+        await migrateSessionsToCloud(user.uid, migrated);
       } finally {
         window.dispatchEvent(new Event('sync-end'));
       }
@@ -213,6 +305,8 @@ export function useSessions() {
   return {
     sessions,
     isSyncing,
+    migrationState,
+    performMigration,
     addSession,
     updateSession,
     deleteSession,

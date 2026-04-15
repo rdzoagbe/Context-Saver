@@ -3,6 +3,7 @@ import { Check, Sparkles } from 'lucide-react';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
+import { analytics } from '../services/analytics';
 
 interface FeatureItem {
   text: string;
@@ -72,7 +73,10 @@ export function PricingCard({ title, price, description, features, highlight, on
       
       <div className="space-y-4">
         <Button
-          onClick={onUpgrade}
+          onClick={() => {
+            analytics.track('plan_selected', { plan: title.toLowerCase() });
+            onUpgrade?.();
+          }}
           disabled={isCurrent}
           variant={highlight ? 'primary' : 'outline'}
           size="lg"
