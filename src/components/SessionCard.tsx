@@ -1,14 +1,17 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, ExternalLink, Pin, PinOff, CheckCircle2, AlertCircle, Archive, PlayCircle } from 'lucide-react';
+import { Clock, ExternalLink, Pin, PinOff, CheckCircle2, AlertCircle, Archive, PlayCircle, Trash2 } from 'lucide-react';
 import { Session, SessionStatus, Priority } from '../types';
 import { Card } from './ui/Card';
 import { Badge } from './ui/Badge';
+import { ConfirmationDialog } from './ui/ConfirmationDialog';
+import { Button } from './ui/Button';
 
 interface SessionCardProps {
   session: Session;
   onTogglePin?: (id: string) => void;
   onUpdateStatus?: (id: string, status: SessionStatus) => void;
+  onDelete?: (id: string) => void;
 }
 
 const statusConfig: Record<SessionStatus, { icon: any; variant: 'indigo' | 'rose' | 'green' | 'gray'; label: string }> = {
@@ -24,35 +27,59 @@ const priorityConfig: Record<Priority, 'gray' | 'indigo' | 'amber' | 'rose' | 'g
   high: 'rose',
 };
 
-export const SessionCard = memo(({ session, onTogglePin, onUpdateStatus }: SessionCardProps) => {
+export const SessionCard = memo(({ session, onTogglePin, onUpdateStatus, onDelete }: SessionCardProps) => {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const StatusIcon = statusConfig[session.status].icon;
 
-  return (
-    <Card 
-      padding="none"
-      className={`group relative transition-all duration-500 premium-card ${
-        session.pinned 
-          ? 'border-indigo-200 dark:border-indigo-900/50 ring-2 ring-indigo-50 dark:ring-indigo-900/20' 
-          : ''
-      }`}
-    >
-      {onTogglePin && (
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            onTogglePin(session.id);
-          }}
-          className={`absolute top-5 right-5 p-2.5 rounded-xl transition-all duration-300 z-10 ${
-            session.pinned
-              ? 'bg-indigo-600 text-white shadow-indigo'
-              : 'bg-slate-50 dark:bg-slate-800 theme-text-secondary opacity-0 group-hover:opacity-100 hover:text-indigo-600 dark:hover:text-indigo-400'
-          }`}
-        >
-          {session.pinned ? <Pin className="w-4 h-4 fill-current" /> : <PinOff className="w-4 h-4" />}
-        </button>
-      )}
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete(session.id);
+    }
+    setIsDeleteDialogOpen(false);
+  };
 
-      <Link to={`/session/${session.id}`} className="block p-6">
+  return (
+    <>
+      <Card 
+        padding="none"
+        className={`group relative transition-all duration-500 premium-card ${
+          session.pinned 
+            ? 'border-indigo-200 dark:border-indigo-900/50 ring-2 ring-indigo-50 dark:ring-indigo-900/20' 
+            : ''
+        }`}
+      >
+        <div className="absolute top-5 right-5 flex items-center gap-2 z-10">
+          {onTogglePin && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                onTogglePin(session.id);
+              }}
+              className={`p-2.5 rounded-xl transition-all duration-300 ${
+                session.pinned
+                  ? 'bg-indigo-600 text-white shadow-indigo'
+                  : 'bg-slate-50 dark:bg-slate-800 theme-text-secondary opacity-0 group-hover:opacity-100 hover:text-indigo-600 dark:hover:text-indigo-400'
+              }`}
+            >
+              {session.pinned ? <Pin className="w-4 h-4 fill-current" /> : <PinOff className="w-4 h-4" />}
+            </button>
+          )}
+
+          {onDelete && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setIsDeleteDialogOpen(true);
+              }}
+              className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 theme-text-secondary opacity-0 group-hover:opacity-100 hover:text-rose-600 dark:hover:text-rose-400 transition-all duration-300"
+              title="Delete session"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        <Link to={`/session/${session.id}`} className="block p-6">
         <div className="flex flex-wrap items-center gap-2 mb-4">
           <Badge variant={statusConfig[session.status].variant} icon={StatusIcon} size="xs">
             {statusConfig[session.status].label}
@@ -104,6 +131,17 @@ export const SessionCard = memo(({ session, onTogglePin, onUpdateStatus }: Sessi
           </div>
         </div>
       </Link>
-    </Card>
+      </Card>
+
+      <ConfirmationDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Session"
+        description={`Are you sure you want to delete "${session.title}"? This action cannot be undone.`}
+        confirmLabel="Delete Session"
+        variant="danger"
+      />
+    </>
   );
 });

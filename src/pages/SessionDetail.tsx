@@ -36,6 +36,7 @@ import { format } from 'date-fns';
 import { geminiService } from '../services/geminiService';
 import { motion, AnimatePresence } from 'motion/react';
 import Markdown from 'react-markdown';
+import { ConfirmationDialog } from '../components/ui/ConfirmationDialog';
 
 const priorityConfig: Record<Priority, { label: string; variant: 'gray' | 'indigo' | 'amber' | 'rose' | 'green' }> = {
   low: { label: 'Low', variant: 'gray' },
@@ -53,10 +54,12 @@ const statusConfig: Record<SessionStatus, { icon: any; variant: 'indigo' | 'rose
 export function SessionDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { sessions, deleteSession, duplicateSession, updateStatus, togglePin, isSyncing } = useSessions();
+  const { sessions, deleteSession, duplicateSession, updateStatus, updateSession, togglePin, isSyncing } = useSessions();
   const [error, setError] = useState<string | null>(null);
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const session = sessions.find((s) => s.id === id);
 
@@ -90,13 +93,14 @@ export function SessionDetail() {
   };
 
   const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this session?')) {
-      try {
-        await deleteSession(session.id);
-        navigate('/dashboard');
-      } catch (err) {
-        handleError(err, 'Failed to delete session');
-      }
+    setIsDeleting(true);
+    try {
+      await deleteSession(session.id);
+      navigate('/dashboard');
+    } catch (err) {
+      handleError(err, 'Failed to delete session');
+      setIsDeleting(false);
+      setIsDeleteDialogOpen(false);
     }
   };
 
@@ -116,6 +120,14 @@ export function SessionDetail() {
       await updateStatus(session.id, 'done');
     } catch (err) {
       handleError(err, 'Failed to update status');
+    }
+  };
+
+  const handleResume = async () => {
+    try {
+      await updateSession(session.id, { status: 'active' });
+    } catch (err) {
+      handleError(err, 'Failed to resume session');
     }
   };
 
@@ -154,6 +166,16 @@ export function SessionDetail() {
   };
 
   const StatusIcon = statusConfig[session.status].icon;
+
+  const getProgress = (status: SessionStatus) => {
+    switch (status) {
+      case 'done': return 100;
+      case 'active': return 50;
+      case 'blocked': return 50;
+      case 'archived': return 0;
+      default: return 0;
+    }
+  };
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-20">
@@ -216,13 +238,24 @@ export function SessionDetail() {
             variant="danger"
             size="sm"
             icon={Trash2}
-            onClick={handleDelete}
+            onClick={() => setIsDeleteDialogOpen(true)}
             title="Delete"
           >
             Delete
           </Button>
         </div>
       </PageHeader>
+
+      <ConfirmationDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Session"
+        description={`Are you sure you want to delete "${session.title}"? This action cannot be undone and will remove all associated notes and links.`}
+        confirmLabel="Delete Session"
+        variant="danger"
+        isLoading={isDeleting}
+      />
 
       <AnimatePresence>
         {aiResponse && (
@@ -257,6 +290,27 @@ export function SessionDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
           <Card className="space-y-8">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between text-[10px] font-bold theme-text-secondary uppercase tracking-widest ml-1">
+                <span>Session Progress</span>
+                <span className={session.status === 'done' ? 'text-emerald-600 dark:text-emerald-400' : 'theme-text-primary'}>
+                  {getProgress(session.status)}%
+                </span>
+              </div>
+              <div className="h-2.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5 border theme-border">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${getProgress(session.status)}%` }}
+                  transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                  className={`h-full rounded-full shadow-sm ${
+                    session.status === 'done' ? 'bg-emerald-500' : 
+                    session.status === 'blocked' ? 'bg-rose-500' : 
+                    'bg-indigo-600'
+                  }`}
+                />
+              </div>
+            </div>
+
             <div className="flex flex-wrap items-center gap-3">
               <Badge variant={statusConfig[session.status].variant} icon={StatusIcon}>
                 {statusConfig[session.status].label}
@@ -285,8 +339,8 @@ export function SessionDetail() {
               </div>
             )}
           </Card>
-
-          <ResumeBox nextStep={session.nextStep} onResume={handleMarkDone} />
+          
+          <ResumeBox nextStep={session.nextStep} onResume={handleResume} />
 
           <div className="flex flex-wrap gap-4">
             {session.status !== 'done' && (

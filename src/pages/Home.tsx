@@ -20,7 +20,7 @@ import { Clock } from 'lucide-react';
 import { analytics } from '../services/analytics';
 
 export function Home() {
-  const { sessions, togglePin, updateStatus, isSyncing } = useSessions();
+  const { sessions, togglePin, updateStatus, deleteSession, isSyncing } = useSessions();
   const { isFree, isPro } = usePlan();
   const { isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
@@ -61,6 +61,18 @@ export function Home() {
       await updateStatus(id, status);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update status');
+      setTimeout(() => setError(null), 5000);
+    }
+  };
+
+  const handleDeleteSession = async (id: string) => {
+    try {
+      setError(null);
+      await deleteSession(id);
+      setToastMessage('Session deleted successfully');
+      setTimeout(() => setToastMessage(null), 5000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete session');
       setTimeout(() => setError(null), 5000);
     }
   };
@@ -265,6 +277,7 @@ export function Home() {
                           session={session} 
                           onTogglePin={handleTogglePin}
                           onUpdateStatus={handleUpdateStatus}
+                          onDelete={handleDeleteSession}
                         />
                       </motion.div>
                     ))}
@@ -294,6 +307,7 @@ export function Home() {
                       session={session} 
                       onTogglePin={handleTogglePin}
                       onUpdateStatus={handleUpdateStatus}
+                      onDelete={handleDeleteSession}
                     />
                   </motion.div>
                 ))}

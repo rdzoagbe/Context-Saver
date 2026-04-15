@@ -1,32 +1,33 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
-import firebaseConfigJson from '../../firebase-applet-config.json';
+import { getFirestore } from 'firebase/firestore';
 
-/**
- * Standardized Firebase configuration.
- * Prioritizes environment variables, falls back to local JSON config.
- */
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || firebaseConfigJson.apiKey,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || firebaseConfigJson.authDomain,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || firebaseConfigJson.projectId,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || firebaseConfigJson.storageBucket,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || firebaseConfigJson.messagingSenderId,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || firebaseConfigJson.appId,
-};
-
-// Validate required configuration
-const requiredKeys = ['apiKey', 'projectId', 'appId'] as const;
-const missingKeys = requiredKeys.filter(key => !firebaseConfig[key]);
-
-if (missingKeys.length > 0) {
-  console.error(`[Firebase] Missing required configuration keys: ${missingKeys.join(', ')}`);
+function requireEnv(name: string): string {
+  const value = import.meta.env[name];
+  if (!value || typeof value !== 'string' || value.trim() === '') {
+    throw new Error(`Missing required Firebase configuration: ${name}`);
+  }
+  return value.trim();
 }
 
-// Initialize Firebase App (Singleton pattern)
-export const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+const firebaseConfig = {
+  apiKey: requireEnv('VITE_FIREBASE_API_KEY'),
+  authDomain: requireEnv('VITE_FIREBASE_AUTH_DOMAIN'),
+  projectId: requireEnv('VITE_FIREBASE_PROJECT_ID'),
+  storageBucket: requireEnv('VITE_FIREBASE_STORAGE_BUCKET'),
+  messagingSenderId: requireEnv('VITE_FIREBASE_MESSAGING_SENDER_ID'),
+  appId: requireEnv('VITE_FIREBASE_APP_ID'),
+};
 
-// Initialize Firebase Services
+console.log('Firebase debug', {
+  apiKeyPrefix: firebaseConfig.apiKey.slice(0, 8),
+  authDomain: firebaseConfig.authDomain,
+  projectId: firebaseConfig.projectId,
+  appIdPrefix: firebaseConfig.appId.slice(0, 12),
+});
+
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export default app;
