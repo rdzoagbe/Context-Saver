@@ -40,7 +40,7 @@ export function SyncIndicator() {
   if (!canSync) return null;
 
   return (
-    <div className="flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/10">
+    <div className="flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/5 theme-text-secondary border theme-border">
       <AnimatePresence mode="wait">
         {!isOnline ? (
           <motion.div key="offline" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-1.5 text-slate-500">

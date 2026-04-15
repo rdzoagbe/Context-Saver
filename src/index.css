@@ -10,6 +10,19 @@
   --shadow-premium: 0 10px 40px -10px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
   --shadow-premium-hover: 0 20px 40px -5px rgba(0, 0, 0, 0.12), 0 8px 12px -2px rgba(0, 0, 0, 0.06);
   --shadow-indigo: 0 10px 30px -5px rgba(79, 70, 229, 0.3), 0 4px 6px -2px rgba(79, 70, 229, 0.15);
+
+  /* Semantic Theme Colors */
+  --color-app-bg: #FBFBFB;
+  --color-app-bg-dark: #0A0A0B;
+  
+  --color-surface: #FFFFFF;
+  --color-surface-dark: #101216;
+  
+  --color-surface-muted: #F1F5F9;
+  --color-surface-muted-dark: #1E293B;
+  
+  --color-border-main: #E2E8F0;
+  --color-border-main-dark: rgba(255, 255, 255, 0.06);
 }
 
 @layer base {
@@ -19,11 +32,11 @@
   }
 
   body {
-    @apply antialiased selection:bg-indigo-100 dark:selection:bg-indigo-900/50 text-slate-900 dark:text-slate-100;
+    @apply antialiased bg-app-bg dark:bg-app-bg-dark text-slate-900 dark:text-slate-100 selection:bg-indigo-100 dark:selection:bg-indigo-900/50;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display tracking-tight;
+    @apply font-display tracking-tight text-slate-900 dark:text-white;
   }
 }
 
@@ -33,11 +46,31 @@
   }
 
   .glass {
-    @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-white/40 dark:border-white/5;
+    @apply bg-white/80 dark:bg-app-bg-dark/80 backdrop-blur-xl border border-border-main dark:border-border-main-dark;
   }
 
   .premium-card {
-    @apply bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 shadow-premium hover:shadow-premium-hover transition-all duration-500;
+    @apply bg-surface dark:bg-surface-dark border border-border-main dark:border-border-main-dark shadow-premium hover:shadow-premium-hover transition-all duration-500 rounded-2xl;
+  }
+  
+  .theme-bg {
+    @apply bg-app-bg dark:bg-app-bg-dark;
+  }
+  
+  .theme-surface {
+    @apply bg-surface dark:bg-surface-dark;
+  }
+  
+  .theme-border {
+    @apply border-border-main dark:border-border-main-dark;
+  }
+  
+  .theme-text-primary {
+    @apply text-slate-900 dark:text-white;
+  }
+  
+  .theme-text-secondary {
+    @apply text-slate-500 dark:text-slate-400;
   }
 }
 

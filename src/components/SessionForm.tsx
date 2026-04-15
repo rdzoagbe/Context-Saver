@@ -120,12 +120,12 @@ export function SessionForm({ initialData, onSubmit, onCancel }: SessionFormProp
           {/* Main Info */}
           <Card className="space-y-6">
             <div className="space-y-2">
-              <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Session Title</label>
+              <label className="text-xs font-medium theme-text-secondary uppercase tracking-wider ml-1">Session Title</label>
               <input
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className={`w-full px-4 py-3 bg-white dark:bg-slate-900 border ${errors.title ? 'border-rose-500' : 'border-slate-200 dark:border-slate-800'} rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-lg font-semibold text-slate-900 dark:text-white placeholder:text-slate-400`}
+                className={`w-full px-4 py-3 bg-white dark:bg-slate-900 border ${errors.title ? 'border-rose-500' : 'theme-border'} rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-lg font-semibold theme-text-primary placeholder:text-slate-400`}
                 placeholder="e.g., Designing User Dashboard"
               />
               {errors.title && <p className="text-rose-500 text-xs font-medium ml-1 flex items-center gap-1.5"><AlertCircle className="w-3.5 h-3.5" /> {errors.title}</p>}
@@ -133,22 +133,22 @@ export function SessionForm({ initialData, onSubmit, onCancel }: SessionFormProp
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Category</label>
+                <label className="text-xs font-medium theme-text-secondary uppercase tracking-wider ml-1">Category</label>
                 <input
                   type="text"
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400"
+                  className="w-full px-4 py-3 bg-white dark:bg-slate-900 border theme-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-medium theme-text-primary placeholder:text-slate-400"
                   placeholder="e.g., Work, Side Project"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Priority</label>
+                <label className="text-xs font-medium theme-text-secondary uppercase tracking-wider ml-1">Priority</label>
                 <div className="relative">
                   <select
                     value={formData.priority}
                     onChange={(e) => setFormData({ ...formData, priority: e.target.value as Priority })}
-                    className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-medium text-slate-900 dark:text-white appearance-none cursor-pointer"
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-900 border theme-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-medium theme-text-primary appearance-none cursor-pointer"
                   >
                     <option value="low">Low Priority</option>
                     <option value="medium">Medium Priority</option>
@@ -162,22 +162,22 @@ export function SessionForm({ initialData, onSubmit, onCancel }: SessionFormProp
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Current Task</label>
+              <label className="text-xs font-medium theme-text-secondary uppercase tracking-wider ml-1">Current Task</label>
               <textarea
                 value={formData.currentTask}
                 onChange={(e) => setFormData({ ...formData, currentTask: e.target.value })}
-                className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm min-h-[100px] leading-relaxed text-slate-700 dark:text-slate-300 font-medium placeholder:text-slate-400"
+                className="w-full px-4 py-3 bg-white dark:bg-slate-900 border theme-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm min-h-[100px] leading-relaxed theme-text-primary font-medium placeholder:text-slate-400"
                 placeholder="What were you working on right now?"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Pause Reason</label>
+              <label className="text-xs font-medium theme-text-secondary uppercase tracking-wider ml-1">Pause Reason</label>
               <input
                 type="text"
                 value={formData.pauseReason}
                 onChange={(e) => setFormData({ ...formData, pauseReason: e.target.value })}
-                className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400"
+                className="w-full px-4 py-3 bg-white dark:bg-slate-900 border theme-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-medium theme-text-primary placeholder:text-slate-400"
                 placeholder="e.g., Lunch break, Meeting, End of day"
               />
             </div>
@@ -206,11 +206,11 @@ export function SessionForm({ initialData, onSubmit, onCancel }: SessionFormProp
 
           {/* Notes */}
           <Card className="space-y-4">
-            <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Additional Notes</label>
+            <label className="text-xs font-medium theme-text-secondary uppercase tracking-wider ml-1">Additional Notes</label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm min-h-[120px] leading-relaxed text-slate-700 dark:text-slate-300 font-medium placeholder:text-slate-400"
+              className="w-full px-4 py-3 bg-white dark:bg-slate-900 border theme-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm min-h-[120px] leading-relaxed theme-text-primary font-medium placeholder:text-slate-400"
               placeholder="Any other details, thoughts, or context..."
             />
           </Card>
@@ -220,12 +220,12 @@ export function SessionForm({ initialData, onSubmit, onCancel }: SessionFormProp
           {/* Status & Pin */}
           <Card className="space-y-6">
             <div className="space-y-2">
-              <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Status</label>
+              <label className="text-xs font-medium theme-text-secondary uppercase tracking-wider ml-1">Status</label>
               <div className="relative">
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value as SessionStatus })}
-                  className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-medium text-slate-900 dark:text-white appearance-none cursor-pointer"
+                  className="w-full px-4 py-3 bg-white dark:bg-slate-900 border theme-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-medium theme-text-primary appearance-none cursor-pointer"
                 >
                   <option value="active">Active</option>
                   <option value="blocked">Blocked</option>
@@ -239,12 +239,12 @@ export function SessionForm({ initialData, onSubmit, onCancel }: SessionFormProp
             </div>
 
             <FeatureGate feature="pinned_sessions" inline>
-              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border theme-border">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg transition-all duration-300 ${formData.pinned ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white dark:bg-slate-900 text-slate-400 border border-slate-200 dark:border-slate-700'}`}>
+                  <div className={`p-2 rounded-lg transition-all duration-300 ${formData.pinned ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white dark:bg-slate-900 text-slate-400 border theme-border'}`}>
                     {formData.pinned ? <Pin className="w-4 h-4" /> : <PinOff className="w-4 h-4" />}
                   </div>
-                  <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Pin Session</span>
+                  <span className="text-sm font-semibold theme-text-secondary">Pin Session</span>
                 </div>
                 <button
                   type="button"
@@ -259,21 +259,21 @@ export function SessionForm({ initialData, onSubmit, onCancel }: SessionFormProp
 
           {/* Tags */}
           <Card className="space-y-4">
-            <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Tags</label>
+            <label className="text-xs font-medium theme-text-secondary uppercase tracking-wider ml-1">Tags</label>
             <input
               type="text"
               value={formData.tags}
               onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-              className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400"
+              className="w-full px-4 py-3 bg-white dark:bg-slate-900 border theme-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-medium theme-text-primary placeholder:text-slate-400"
               placeholder="e.g., design, coding, research"
             />
-            <p className="text-xs text-slate-400 dark:text-slate-500 ml-1 font-medium italic">Separate tags with commas</p>
+            <p className="text-xs theme-text-secondary ml-1 font-medium italic">Separate tags with commas</p>
           </Card>
 
           {/* Links */}
           <Card className="space-y-6">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Reference Links</label>
+              <label className="text-xs font-medium theme-text-secondary uppercase tracking-wider ml-1">Reference Links</label>
               <Button
                 type="button"
                 variant="ghost"
@@ -285,11 +285,11 @@ export function SessionForm({ initialData, onSubmit, onCancel }: SessionFormProp
 
             <div className="space-y-4">
               {formData.links.map((link) => (
-                <div key={link.id} className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3 relative group hover:border-indigo-500/50 transition-all duration-300">
+                <div key={link.id} className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border theme-border space-y-3 relative group hover:border-indigo-500/50 transition-all duration-300">
                   <button
                     type="button"
                     onClick={() => removeLink(link.id)}
-                    className="absolute -top-2 -right-2 p-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-rose-500 rounded-lg opacity-0 group-hover:opacity-100 transition-all shadow-sm hover:bg-rose-50"
+                    className="absolute -top-2 -right-2 p-1.5 bg-white dark:bg-slate-800 border theme-border text-rose-500 rounded-lg opacity-0 group-hover:opacity-100 transition-all shadow-sm hover:bg-rose-50"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -298,7 +298,7 @@ export function SessionForm({ initialData, onSubmit, onCancel }: SessionFormProp
                       type="text"
                       value={link.label}
                       onChange={(e) => updateLink(link.id, 'label', e.target.value)}
-                      className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-900 dark:text-white placeholder:text-slate-400"
+                      className="w-full px-3 py-2 bg-white dark:bg-slate-900 border theme-border rounded-lg text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 theme-text-primary placeholder:text-slate-400"
                       placeholder="Link Label (e.g., Figma File)"
                     />
                     <div className="relative">
@@ -307,7 +307,7 @@ export function SessionForm({ initialData, onSubmit, onCancel }: SessionFormProp
                         type="url"
                         value={link.url}
                         onChange={(e) => updateLink(link.id, 'url', e.target.value)}
-                        className="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-900 dark:text-white font-medium placeholder:text-slate-400"
+                        className="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-900 border theme-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 theme-text-primary font-medium placeholder:text-slate-400"
                         placeholder="https://..."
                       />
                     </div>
@@ -315,8 +315,8 @@ export function SessionForm({ initialData, onSubmit, onCancel }: SessionFormProp
                 </div>
               ))}
               {formData.links.length === 0 && (
-                <div className="text-center py-6 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl">
-                  <p className="text-sm text-slate-400 dark:text-slate-500 italic font-medium">No links added yet.</p>
+                <div className="text-center py-6 border border-dashed theme-border rounded-xl">
+                  <p className="text-sm theme-text-secondary italic font-medium">No links added yet.</p>
                 </div>
               )}
             </div>

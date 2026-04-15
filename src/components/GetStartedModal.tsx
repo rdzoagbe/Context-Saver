@@ -52,18 +52,18 @@ export function GetStartedModal({ isOpen, onClose }: GetStartedModalProps) {
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="relative w-full max-w-2xl"
           >
-            <Card className="overflow-hidden border-slate-200 dark:border-white/10 shadow-2xl">
+            <Card className="overflow-hidden theme-border shadow-2xl">
               <div className="p-8 space-y-8">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">How would you like to start?</h2>
-                    <p className="text-slate-500 dark:text-slate-400">Choose the path that fits your current needs.</p>
+                    <h2 className="text-2xl font-bold theme-text-primary tracking-tight">How would you like to start?</h2>
+                    <p className="theme-text-secondary">Choose the path that fits your current needs.</p>
                   </div>
                   <button
                     onClick={onClose}
                     className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   >
-                    <X className="w-5 h-5 text-slate-500" />
+                    <X className="w-5 h-5 theme-text-secondary" />
                   </button>
                 </div>
 
@@ -71,15 +71,15 @@ export function GetStartedModal({ isOpen, onClose }: GetStartedModalProps) {
                   {/* Option 1: Guest Mode */}
                   <button
                     onClick={handleGuestMode}
-                    className="group text-left p-6 rounded-2xl border border-slate-200 dark:border-white/5 hover:border-indigo-500/50 hover:bg-indigo-50/30 dark:hover:bg-indigo-500/5 transition-all duration-300"
+                    className="group text-left p-6 rounded-2xl border theme-border hover:border-indigo-500/50 hover:bg-indigo-50/30 dark:hover:bg-indigo-500/5 transition-all duration-300"
                   >
                     <div className="space-y-4">
-                      <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                      <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 theme-text-secondary flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                         <Rocket className="w-6 h-6" />
                       </div>
                       <div className="space-y-1">
-                        <h3 className="font-bold text-slate-900 dark:text-white">Continue as Guest</h3>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">Local storage only. No account required. Start in seconds.</p>
+                        <h3 className="font-bold theme-text-primary">Continue as Guest</h3>
+                        <p className="text-sm theme-text-secondary">Local storage only. No account required. Start in seconds.</p>
                       </div>
                       <div className="flex items-center gap-2 text-sm font-bold text-indigo-600 dark:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity">
                         Try it now <ArrowRight className="w-4 h-4" />
@@ -90,15 +90,15 @@ export function GetStartedModal({ isOpen, onClose }: GetStartedModalProps) {
                   {/* Option 2: Create Account */}
                   <button
                     onClick={handleSignup}
-                    className="group text-left p-6 rounded-2xl border border-slate-200 dark:border-white/5 hover:border-violet-500/50 hover:bg-violet-50/30 dark:hover:bg-violet-500/5 transition-all duration-300"
+                    className="group text-left p-6 rounded-2xl border theme-border hover:border-violet-500/50 hover:bg-violet-50/30 dark:hover:bg-violet-500/5 transition-all duration-300"
                   >
                     <div className="space-y-4">
-                      <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center group-hover:bg-violet-600 group-hover:text-white transition-colors">
+                      <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 theme-text-secondary flex items-center justify-center group-hover:bg-violet-600 group-hover:text-white transition-colors">
                         <Shield className="w-6 h-6" />
                       </div>
                       <div className="space-y-1">
-                        <h3 className="font-bold text-slate-900 dark:text-white">Create Account</h3>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">Enable cloud sync and access your sessions from any device.</p>
+                        <h3 className="font-bold theme-text-primary">Create Account</h3>
+                        <p className="text-sm theme-text-secondary">Enable cloud sync and access your sessions from any device.</p>
                       </div>
                       <div className="flex items-center gap-2 text-sm font-bold text-violet-600 dark:text-violet-400 opacity-0 group-hover:opacity-100 transition-opacity">
                         Sign up free <ArrowRight className="w-4 h-4" />

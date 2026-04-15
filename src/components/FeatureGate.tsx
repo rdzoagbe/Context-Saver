@@ -41,15 +41,15 @@ export function FeatureGate({ feature, children, fallback, inline = false }: Fea
   const targetPlan = isProFeature ? 'Pro' : 'Plus';
 
   return (
-    <div className="relative group overflow-hidden rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/20 p-8 text-center">
+    <div className="relative group overflow-hidden rounded-2xl border border-dashed theme-border bg-slate-50/50 dark:bg-slate-900/20 p-8 text-center">
       <div className="absolute inset-0 bg-white/40 dark:bg-slate-950/40 backdrop-blur-[2px] z-0" />
       <div className="relative z-10 space-y-4">
         <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 shadow-sm">
           <Sparkles className="w-6 h-6" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-white">{targetPlan} Feature</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-[240px] mx-auto">
+          <h3 className="text-sm font-bold theme-text-primary">{targetPlan} Feature</h3>
+          <p className="text-sm theme-text-secondary mt-1 max-w-[240px] mx-auto">
             Upgrade to {targetPlan} to unlock this feature and supercharge your productivity.
           </p>
         </div>

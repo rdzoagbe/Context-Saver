@@ -32,8 +32,8 @@ export const SummaryStrip = memo(({ sessions }: SummaryStripProps) => {
           <BarChart3 className="w-6 h-6" />
         </div>
         <div>
-          <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active</p>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">{stats.active}</p>
+          <p className="text-xs font-medium theme-text-secondary uppercase tracking-wider">Active</p>
+          <p className="text-2xl font-bold theme-text-primary mt-0.5">{stats.active}</p>
         </div>
       </Card>
       <Card padding="sm" className="flex items-center gap-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
@@ -41,8 +41,8 @@ export const SummaryStrip = memo(({ sessions }: SummaryStripProps) => {
           <CheckCircle className="w-6 h-6" />
         </div>
         <div>
-          <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Completed</p>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">{stats.done}</p>
+          <p className="text-xs font-medium theme-text-secondary uppercase tracking-wider">Completed</p>
+          <p className="text-2xl font-bold theme-text-primary mt-0.5">{stats.done}</p>
         </div>
       </Card>
       <Card padding="sm" className="flex items-center gap-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
@@ -50,8 +50,8 @@ export const SummaryStrip = memo(({ sessions }: SummaryStripProps) => {
           <Calendar className="w-6 h-6" />
         </div>
         <div>
-          <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Today</p>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">{stats.resumableToday}</p>
+          <p className="text-xs font-medium theme-text-secondary uppercase tracking-wider">Today</p>
+          <p className="text-2xl font-bold theme-text-primary mt-0.5">{stats.resumableToday}</p>
         </div>
       </Card>
       <Card padding="sm" className="flex items-center gap-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
@@ -59,8 +59,8 @@ export const SummaryStrip = memo(({ sessions }: SummaryStripProps) => {
           <Clock className="w-6 h-6" />
         </div>
         <div>
-          <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Updated</p>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">{stats.lastUpdated}</p>
+          <p className="text-xs font-medium theme-text-secondary uppercase tracking-wider">Updated</p>
+          <p className="text-2xl font-bold theme-text-primary mt-0.5">{stats.lastUpdated}</p>
         </div>
       </Card>
     </div>

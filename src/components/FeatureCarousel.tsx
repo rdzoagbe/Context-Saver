@@ -83,7 +83,7 @@ export function FeatureCarousel() {
                 }}
                 className={`w-full text-left p-6 rounded-2xl transition-all duration-300 border ${
                   activeSlide === index
-                    ? 'bg-white dark:bg-slate-900 border-indigo-500/50 shadow-xl shadow-indigo-500/10'
+                    ? 'theme-surface border-indigo-500/50 shadow-xl shadow-indigo-500/10'
                     : 'border-transparent hover:bg-slate-50 dark:hover:bg-slate-900/50'
                 }`}
               >
@@ -92,14 +92,14 @@ export function FeatureCarousel() {
                     <slide.icon className="w-6 h-6" />
                   </div>
                   <div className="space-y-1">
-                    <h3 className={`font-bold transition-colors ${activeSlide === index ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-900 dark:text-white'}`}>
+                    <h3 className={`font-bold transition-colors ${activeSlide === index ? 'text-indigo-600 dark:text-indigo-400' : 'theme-text-primary'}`}>
                       {slide.title}
                     </h3>
                     {activeSlide === index && (
                       <motion.p
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
-                        className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed"
+                        className="text-sm theme-text-secondary leading-relaxed"
                       >
                         {slide.description}
                       </motion.p>

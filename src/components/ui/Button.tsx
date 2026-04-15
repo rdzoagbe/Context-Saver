@@ -36,9 +36,9 @@ export function Button({
   
   const variants = {
     primary: 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm',
-    secondary: 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 hover:bg-slate-200 dark:hover:bg-slate-700',
-    outline: 'bg-transparent border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800',
-    ghost: 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800',
+    secondary: 'bg-surface-muted dark:bg-surface-muted-dark theme-text-primary hover:bg-slate-200 dark:hover:bg-slate-700',
+    outline: 'bg-transparent border theme-border theme-text-secondary hover:bg-slate-50 dark:hover:bg-slate-800 hover:theme-text-primary',
+    ghost: 'theme-text-secondary hover:bg-slate-100 dark:hover:bg-slate-800 hover:theme-text-primary',
     danger: 'bg-rose-600 text-white hover:bg-rose-700 shadow-sm'
   };
 

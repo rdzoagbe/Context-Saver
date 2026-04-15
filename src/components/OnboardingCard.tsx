@@ -44,7 +44,7 @@ export function OnboardingCard({ onDismiss }: OnboardingCardProps) {
       <Card className="relative overflow-hidden bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-900/20 dark:to-slate-900 border-indigo-100 dark:border-indigo-500/20 shadow-sm">
         <button
           onClick={onDismiss}
-          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 z-10"
+          className="absolute top-4 right-4 p-2 theme-text-secondary hover:theme-text-primary transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 z-10"
           aria-label="Dismiss onboarding"
         >
           <X className="w-5 h-5" />
@@ -54,10 +54,10 @@ export function OnboardingCard({ onDismiss }: OnboardingCardProps) {
           <div className="flex flex-col lg:flex-row gap-12 items-start">
             <div className="max-w-xl space-y-6">
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+                <h2 className="text-2xl font-bold theme-text-primary tracking-tight">
                   Master your continuity flow 🧠
                 </h2>
-                <p className="text-slate-600 dark:text-slate-300 text-base leading-relaxed">
+                <p className="theme-text-secondary text-base leading-relaxed">
                   Context Saver is your "mental save button". Follow these steps to reduce cognitive load and resume work instantly.
                 </p>
               </div>
@@ -86,10 +86,10 @@ export function OnboardingCard({ onDismiss }: OnboardingCardProps) {
                       {React.createElement(steps[currentStep].icon, { className: "w-6 h-6" })}
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                      <h3 className="text-lg font-bold theme-text-primary">
                         {steps[currentStep].title}
                       </h3>
-                      <p className="text-slate-500 dark:text-slate-400">
+                      <p className="theme-text-secondary">
                         {steps[currentStep].description}
                       </p>
                     </div>
@@ -112,7 +112,7 @@ export function OnboardingCard({ onDismiss }: OnboardingCardProps) {
                     {currentStep < steps.length - 1 && !steps[currentStep].to && (
                       <button 
                         onClick={() => setCurrentStep(steps.length - 1)}
-                        className="text-sm font-medium text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                        className="text-sm font-medium theme-text-secondary hover:theme-text-primary transition-colors"
                       >
                         Skip to end
                       </button>
@@ -137,7 +137,7 @@ export function OnboardingCard({ onDismiss }: OnboardingCardProps) {
                   }`}>
                     {index < currentStep ? <CheckCircle2 className="w-5 h-5" /> : <step.icon className="w-4 h-4" />}
                   </div>
-                  <span className={`text-sm font-bold ${index === currentStep ? 'text-slate-900 dark:text-white' : 'text-slate-500'}`}>
+                  <span className={`text-sm font-bold ${index === currentStep ? 'theme-text-primary' : 'theme-text-secondary'}`}>
                     {step.title}
                   </span>
                 </div>

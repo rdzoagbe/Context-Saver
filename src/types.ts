@@ -9,7 +9,8 @@ export type Feature =
   | 'advanced_filters' 
   | 'cloud_sync' 
   | 'history_restore' 
-  | 'analytics';
+  | 'analytics'
+  | 'smart_resume';
 
 export interface SessionLink {
   id: string;

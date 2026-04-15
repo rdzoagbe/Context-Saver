@@ -16,11 +16,11 @@ export function PageHeader({
   return (
     <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 ${className}`}>
       <div className="space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-bold theme-text-primary tracking-tight">
           {title}
         </h1>
         {description && (
-          <p className="text-slate-500 dark:text-slate-400 text-base max-w-2xl">
+          <p className="theme-text-secondary text-base max-w-2xl">
             {description}
           </p>
         )}

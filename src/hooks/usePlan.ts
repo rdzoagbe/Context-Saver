@@ -8,7 +8,7 @@ import { db } from '../services/firebase';
 const PLAN_FEATURES: Record<PlanType, Feature[]> = {
   free: [],
   plus: ['pinned_sessions', 'templates', 'reminders', 'advanced_filters'],
-  pro: ['pinned_sessions', 'templates', 'reminders', 'advanced_filters', 'cloud_sync', 'history_restore', 'analytics'],
+  pro: ['pinned_sessions', 'templates', 'reminders', 'advanced_filters', 'cloud_sync', 'history_restore', 'analytics', 'smart_resume'],
 };
 
 export function usePlan() {

@@ -21,7 +21,7 @@ export function MigrationModal({ state, onMigrate, onDismiss }: MigrationModalPr
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200 dark:border-white/10"
+          className="theme-surface rounded-[2rem] shadow-2xl max-w-lg w-full overflow-hidden border theme-border"
         >
           <div className="p-8 space-y-6">
             <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 mx-auto">
@@ -33,10 +33,10 @@ export function MigrationModal({ state, onMigrate, onDismiss }: MigrationModalPr
             </div>
 
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+              <h2 className="text-2xl font-bold theme-text-primary">
                 {state === 'migrating' ? 'Syncing to Cloud...' : 'Cloud Sync Available'}
               </h2>
-              <p className="text-slate-500 dark:text-slate-400">
+              <p className="theme-text-secondary">
                 {state === 'migrating' 
                   ? 'Please wait while we securely transfer your sessions to the cloud.'
                   : 'You have local sessions on this device, but you also have sessions in the cloud. How would you like to proceed?'}
@@ -54,8 +54,8 @@ export function MigrationModal({ state, onMigrate, onDismiss }: MigrationModalPr
                       <ArrowRight className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-slate-900 dark:text-white">Merge Sessions</h3>
-                      <p className="text-sm text-slate-500 dark:text-slate-400">Keep both local and cloud sessions</p>
+                      <h3 className="font-bold theme-text-primary">Merge Sessions</h3>
+                      <p className="text-sm theme-text-secondary">Keep both local and cloud sessions</p>
                     </div>
                   </div>
                   <CheckCircle2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -63,15 +63,15 @@ export function MigrationModal({ state, onMigrate, onDismiss }: MigrationModalPr
 
                 <button
                   onClick={() => onMigrate(false)}
-                  className="w-full flex items-center justify-between p-4 rounded-xl border-2 border-slate-100 dark:border-white/5 hover:border-slate-300 dark:hover:border-white/20 bg-slate-50 dark:bg-slate-800/50 transition-all group text-left"
+                  className="w-full flex items-center justify-between p-4 rounded-xl border-2 theme-border hover:border-slate-300 dark:hover:border-white/20 bg-slate-50 dark:bg-slate-800/50 transition-all group text-left"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-400">
+                    <div className="w-10 h-10 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center theme-text-secondary">
                       <HardDrive className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-slate-900 dark:text-white">Discard Local</h3>
-                      <p className="text-sm text-slate-500 dark:text-slate-400">Use only the sessions from the cloud</p>
+                      <h3 className="font-bold theme-text-primary">Discard Local</h3>
+                      <p className="text-sm theme-text-secondary">Use only the sessions from the cloud</p>
                     </div>
                   </div>
                   <AlertCircle className="w-5 h-5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -81,10 +81,10 @@ export function MigrationModal({ state, onMigrate, onDismiss }: MigrationModalPr
           </div>
           
           {state === 'prompt_merge' && (
-            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-white/5 flex justify-center">
+            <div className="p-4 theme-surface border-t theme-border flex justify-center">
               <button 
                 onClick={onDismiss}
-                className="text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+                className="text-sm font-medium theme-text-secondary hover:theme-text-primary transition-colors"
               >
                 Decide later (Local sessions will be hidden)
               </button>

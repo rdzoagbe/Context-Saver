@@ -11,7 +11,7 @@ export function PlanBadge({ plan, size = 'md' }: PlanBadgeProps) {
     free: {
       label: 'Free',
       icon: User,
-      className: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border-slate-200 dark:border-slate-700'
+      className: 'bg-slate-100 theme-text-secondary dark:bg-slate-800 theme-border'
     },
     plus: {
       label: 'Plus',

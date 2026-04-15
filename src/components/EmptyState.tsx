@@ -35,7 +35,7 @@ export function EmptyState({
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="text-center py-20 px-8 bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden relative"
+      className="text-center py-20 px-8 theme-surface rounded-[2rem] border theme-border shadow-sm overflow-hidden relative"
     >
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent" />
       
@@ -43,10 +43,10 @@ export function EmptyState({
         <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 mb-8 shadow-inner">
           <Icon className="h-10 w-10" />
         </div>
-        <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight">
+        <h3 className="text-2xl font-bold theme-text-primary mb-3 tracking-tight">
           {displayTitle}
         </h3>
-        <p className="text-slate-500 dark:text-slate-400 text-base max-w-md mx-auto mb-10 leading-relaxed">
+        <p className="theme-text-secondary text-base max-w-md mx-auto mb-10 leading-relaxed">
           {displayDescription}
         </p>
         

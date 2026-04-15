@@ -22,6 +22,11 @@ const UpgradeSuccess = lazy(() => import('./pages/UpgradeSuccess').then(module =
 const Login = lazy(() => import('./pages/Login').then(module => ({ default: module.Login })));
 const Signup = lazy(() => import('./pages/Signup').then(module => ({ default: module.Signup })));
 const SecurityPolicy = lazy(() => import('./pages/SecurityPolicy').then(module => ({ default: module.SecurityPolicy })));
+const AnalyticsDashboard = lazy(() => import('./pages/AnalyticsDashboard').then(module => ({ default: module.AnalyticsDashboard })));
+const HowItWorks = lazy(() => import('./pages/HowItWorks').then(module => ({ default: module.HowItWorks })));
+const Outcomes = lazy(() => import('./pages/Outcomes').then(module => ({ default: module.Outcomes })));
+const Privacy = lazy(() => import('./pages/Privacy').then(module => ({ default: module.Privacy })));
+const Terms = lazy(() => import('./pages/Terms').then(module => ({ default: module.Terms })));
 
 // Loading fallback
 const PageLoader = () => (
@@ -40,6 +45,12 @@ function AppContent() {
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Landing />} />
+              <Route path="/how-it-works" element={<HowItWorks />} />
+              <Route path="/outcomes" element={<Outcomes />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/security" element={<SecurityPolicy />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               
@@ -49,8 +60,7 @@ function AppContent() {
                 <Route path="/edit/:id" element={<EditSession />} />
                 <Route path="/session/:id" element={<SessionDetail />} />
                 <Route path="/settings" element={<Settings />} />
-                <Route path="/pricing" element={<Pricing />} />
-                <Route path="/security" element={<SecurityPolicy />} />
+                <Route path="/analytics" element={<AnalyticsDashboard />} />
                 <Route path="/upgrade-success" element={<UpgradeSuccess />} />
               </Route>
             </Routes>

@@ -14,7 +14,7 @@ export function Card({
   padding = 'md'
 }: CardProps) {
   const variants = {
-    default: 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md',
+    default: 'theme-surface theme-border shadow-sm hover:shadow-md',
     indigo: 'bg-indigo-600 text-white shadow-md border-transparent',
     danger: 'bg-rose-50 dark:bg-rose-900/10 border-rose-200 dark:border-rose-900/30',
     ghost: 'bg-slate-50 dark:bg-slate-800/50 border-dashed border-slate-200 dark:border-slate-700'

@@ -106,15 +106,15 @@ export function Home() {
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="fixed top-24 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-white dark:bg-slate-800 px-6 py-4 rounded-2xl shadow-premium border border-slate-100 dark:border-white/10"
+            className="fixed top-24 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 theme-surface px-6 py-4 rounded-2xl shadow-premium border theme-border"
           >
             <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
               <CheckCircle2 className="w-5 h-5" />
             </div>
-            <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{toastMessage}</p>
+            <p className="text-sm font-medium theme-text-primary">{toastMessage}</p>
             <button 
               onClick={() => setToastMessage(null)}
-              className="ml-4 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+              className="ml-4 p-1 theme-text-secondary hover:theme-text-primary transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -125,15 +125,15 @@ export function Home() {
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="fixed top-24 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-white dark:bg-slate-800 px-6 py-4 rounded-2xl shadow-premium border border-rose-100 dark:border-rose-900/30"
+            className="fixed top-24 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 theme-surface px-6 py-4 rounded-2xl shadow-premium border border-rose-100 dark:border-rose-900/30"
           >
             <div className="w-8 h-8 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center text-rose-600 dark:text-rose-400">
               <AlertCircle className="w-5 h-5" />
             </div>
-            <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{error}</p>
+            <p className="text-sm font-medium theme-text-primary">{error}</p>
             <button 
               onClick={() => setError(null)}
-              className="ml-4 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+              className="ml-4 p-1 theme-text-secondary hover:theme-text-primary transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -215,8 +215,8 @@ export function Home() {
                     <Cloud className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-xl text-slate-900 dark:text-white">Cloud Sync Available</h3>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm">Create account to sync across devices.</p>
+                    <h3 className="font-bold text-xl theme-text-primary">Cloud Sync Available</h3>
+                    <p className="theme-text-secondary text-sm">Create account to sync across devices.</p>
                   </div>
                 </div>
                 <div className="hidden sm:flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold text-sm">
@@ -240,7 +240,7 @@ export function Home() {
         {isSyncing && sessions.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 space-y-4">
             <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-            <p className="text-slate-500 dark:text-slate-400 font-medium">Syncing sessions...</p>
+            <p className="theme-text-secondary font-medium">Syncing sessions...</p>
           </div>
         ) : filteredSessions.length > 0 ? (
           <div className="space-y-12">
@@ -251,7 +251,7 @@ export function Home() {
                     <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
                       <Pin className="w-5 h-5 fill-current" />
                     </div>
-                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">Pinned Sessions</h2>
+                    <h2 className="text-xl font-bold theme-text-primary">Pinned Sessions</h2>
                   </div>
                   <motion.div 
                     variants={container}
@@ -275,10 +275,10 @@ export function Home() {
 
             <section className="space-y-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
+                <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center theme-text-secondary">
                   <Clock className="w-5 h-5" />
                 </div>
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                <h2 className="text-xl font-bold theme-text-primary">
                   {pinnedSessions.length > 0 ? 'Recent Sessions' : 'All Sessions'}
                 </h2>
               </div>
