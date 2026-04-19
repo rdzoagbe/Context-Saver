@@ -32,7 +32,7 @@ export type MigrationState = 'idle' | 'checking' | 'prompt_merge' | 'migrating' 
 
 export function useSessionsInternal() {
   const { user, isAuthenticated } = useAuth();
-  const { isPro } = usePlan();
+  const { isPro, hasPremiumOrBetter } = usePlan();
   
   const [localSessions, setLocalSessionsState] = useState<Session[]>([]);
   const [cloudSessions, setCloudSessions] = useState<Session[]>([]);
@@ -85,8 +85,8 @@ export function useSessionsInternal() {
     loadLocalData();
   }, [user?.uid]);
 
-  // Cloud sync is only for Pro users who are logged in
-  const canSync = isAuthenticated && isPro;
+// Cloud sync is only for Premium and Pro users who are logged in
+  const canSync = isAuthenticated && hasPremiumOrBetter;
 
   // Source of truth depends on sync capability and migration state
   const sessions = canSync ? cloudSessions : localSessions;
@@ -103,7 +103,7 @@ export function useSessionsInternal() {
   useEffect(() => {
     if (canSync && user) {
       setIsSyncing(true);
-      const unsubscribe = subscribeToSessions(user.uid, 50, (sessions) => {
+      const unsubscribe = subscribeToSessions(user.uid, user.email, 50, (sessions) => {
         setCloudSessions(sessions);
         setCloudSessionsLoaded(true);
         setIsSyncing(false);

@@ -10,6 +10,7 @@ import { QuickCapture } from './QuickCapture';
 import { MigrationModal } from './MigrationModal';
 import { FeatureGate } from './FeatureGate';
 import { useSessions } from '../contexts/SessionContext';
+import { NotificationBell } from './ui/NotificationBell';
 
 export function Layout() {
   const location = useLocation();
@@ -107,7 +108,7 @@ export function Layout() {
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
         {/* Header */}
-        <header className="glass sticky top-0 z-30 px-6 h-16 flex items-center justify-between">
+        <header className="glass sticky top-0 z-30 px-6 h-16 flex items-center justify-between border-b theme-border shadow-sm">
           <div className="flex items-center gap-4">
             {!isRootPath && (
               <button 
@@ -125,6 +126,10 @@ export function Layout() {
             </Link>
           </div>
           <div className="flex items-center gap-3">
+            {/* Notification Header Appended Here inside a new Component (or inline) */}
+            <FeatureGate feature="pinned_sessions" inline>
+               <NotificationBell />
+            </FeatureGate>
             {isAuthenticated && (
               <div className="sm:hidden w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-sm">
                 {user?.photoURL ? (

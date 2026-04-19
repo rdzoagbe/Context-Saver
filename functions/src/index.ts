@@ -54,6 +54,8 @@ export const stripeWebhook = functions.https.onRequest(async (req, res) => {
             
             if (priceId === process.env.STRIPE_PRO_PRICE_ID) {
               plan = "pro";
+            } else if (priceId === process.env.STRIPE_PREMIUM_PRICE_ID) {
+              plan = "premium";
             }
 
             await admin.firestore()
@@ -86,7 +88,13 @@ export const stripeWebhook = functions.https.onRequest(async (req, res) => {
             let plan = "free";
             if (subscription.status === "active" || subscription.status === "trialing") {
                const priceId = subscription.items.data[0].price.id;
-               plan = priceId === process.env.STRIPE_PRO_PRICE_ID ? "pro" : "plus";
+               if (priceId === process.env.STRIPE_PRO_PRICE_ID) {
+                 plan = "pro";
+               } else if (priceId === process.env.STRIPE_PREMIUM_PRICE_ID) {
+                 plan = "premium";
+               } else {
+                 plan = "plus";
+               }
             }
 
             await doc.ref.update({

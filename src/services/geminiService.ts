@@ -1,12 +1,10 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || "");
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export const geminiService = {
   async generateResumeStrategy(session: { title: string; currentTask: string; nextStep: string; notes?: string }) {
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
       const prompt = `
         You are an expert productivity assistant. I am resuming a deep-work session and need a quick "Smart Resume" strategy.
         
@@ -23,9 +21,12 @@ export const geminiService = {
         Format the response in clean Markdown.
       `;
 
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      return response.text();
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+      });
+      
+      return response.text;
     } catch (error) {
       console.error("Gemini Error:", error);
       throw new Error("Failed to generate resume strategy. Please check your AI configuration.");

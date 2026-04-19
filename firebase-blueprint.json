@@ -1,43 +1,86 @@
 {
   "entities": {
-    "User": {
-      "title": "User",
-      "description": "User profile and settings",
-      "type": "object",
-      "properties": {
-        "email": { "type": "string", "format": "email" },
-        "uid": { "type": "string" },
-        "createdAt": { "type": "number" }
-      },
-      "required": ["email", "uid"]
-    },
     "Session": {
       "title": "Session",
-      "description": "A work context session",
+      "description": "A context session containing tasks, links, and notes.",
       "type": "object",
       "properties": {
         "id": { "type": "string" },
         "title": { "type": "string" },
+        "category": { "type": "string" },
         "currentTask": { "type": "string" },
-        "nextStep": { "type": "string" },
         "pauseReason": { "type": "string" },
-        "status": { "type": "string", "enum": ["active", "paused", "completed"] },
-        "priority": { "type": "string", "enum": ["low", "medium", "high"] },
+        "nextStep": { "type": "string" },
+        "notes": { "type": "string" },
         "tags": { "type": "array", "items": { "type": "string" } },
+        "links": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "label": { "type": "string" },
+              "url": { "type": "string" },
+              "comment": { "type": "string" }
+            }
+          }
+        },
+        "priority": { "type": "string", "enum": ["low", "medium", "high"] },
+        "status": { "type": "string", "enum": ["active", "archived", "done", "blocked"] },
+        "pinned": { "type": "boolean" },
+        "createdAt": { "type": "number" },
         "updatedAt": { "type": "number" },
-        "createdAt": { "type": "number" }
+        "userId": { "type": "string" },
+        "dueDate": { "type": "number" },
+        "duration": { "type": "number" },
+        "isConfidential": { "type": "boolean" },
+        "collaborators": { "type": "array", "items": { "type": "string" } }
       },
-      "required": ["id", "title", "status"]
+      "required": ["id", "title", "userId", "createdAt", "updatedAt"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Private user profile data including plan information.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "plan": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["free", "plus", "premium", "pro"] },
+            "expiresAt": { "type": "number" }
+          }
+        }
+      },
+      "required": ["uid", "email"]
+    },
+    "Subscription": {
+      "title": "Subscription",
+      "description": "User subscription data managed by Stripe.",
+      "type": "object",
+      "properties": {
+        "plan": { "type": "string" },
+        "status": { "type": "string" },
+        "stripeCustomerId": { "type": "string" },
+        "stripeSubscriptionId": { "type": "string" },
+        "currentPeriodEnd": { "type": "number" },
+        "updatedAt": { "type": "object" }
+      }
     }
   },
   "firestore": {
-    "/users/{userId}": {
-      "schema": "User",
-      "description": "User private data"
-    },
     "/users/{userId}/sessions/{sessionId}": {
       "schema": "Session",
-      "description": "User work sessions"
+      "description": "Subcollection of user sessions."
+    },
+    "/users/{userId}/billing/{docId}": {
+      "schema": "Subscription",
+      "description": "User billing and subscription information."
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Private user profile documents."
     }
   }
 }

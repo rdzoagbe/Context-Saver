@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -21,7 +21,14 @@ import {
   Zap,
   Sparkles,
   Loader2,
-  X
+  X,
+  Shield,
+  ShieldAlert,
+  Timer,
+  Play,
+  Square,
+  Share2,
+  Users
 } from 'lucide-react';
 import { useSessions } from '../contexts/SessionContext';
 import { SessionStatus, Priority } from '../types';
@@ -36,7 +43,10 @@ import { format } from 'date-fns';
 import { geminiService } from '../services/geminiService';
 import { motion, AnimatePresence } from 'motion/react';
 import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { ConfirmationDialog } from '../components/ui/ConfirmationDialog';
+import { ShareModal } from '../components/ui/ShareModal';
+import { useAuth } from '../hooks/useAuth';
 
 const priorityConfig: Record<Priority, { label: string; variant: 'gray' | 'indigo' | 'amber' | 'rose' | 'green' }> = {
   low: { label: 'Low', variant: 'gray' },
@@ -54,14 +64,68 @@ const statusConfig: Record<SessionStatus, { icon: any; variant: 'indigo' | 'rose
 export function SessionDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { sessions, deleteSession, duplicateSession, updateStatus, updateSession, togglePin, isSyncing } = useSessions();
   const [error, setError] = useState<string | null>(null);
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  
+  // Time Tracker State
+  const [isTracking, setIsTracking] = useState(false);
+  const [localDuration, setLocalDuration] = useState(0);
+  const timerRef = useRef<number | null>(null);
 
   const session = sessions.find((s) => s.id === id);
+  // Optional chaining to safely check if the logged in user is the owner
+  const isOwner = user?.uid === (session as any)?.userId || true; // Fallback to true if local
+
+  useEffect(() => {
+    if (session) {
+      setLocalDuration(session.duration || 0);
+    }
+  }, [session?.id, session?.duration]);
+
+  useEffect(() => {
+    if (isTracking) {
+      timerRef.current = window.setInterval(() => {
+        setLocalDuration(prev => prev + 1);
+      }, 1000);
+    } else if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [isTracking]);
+
+  const handleToggleTimer = async () => {
+    if (!session) return;
+    
+    if (isTracking) {
+      // Stop tracking and save
+      setIsTracking(false);
+      try {
+        await updateSession(session.id, { duration: localDuration });
+      } catch (err) {
+        handleError(err, 'Failed to save time');
+      }
+    } else {
+      // Start tracking
+      setIsTracking(true);
+    }
+  };
+
+  const formatDuration = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    if (h > 0) return `${h}h ${m}m ${s}s`;
+    if (m > 0) return `${m}m ${s}s`;
+    return `${s}s`;
+  };
 
   if (!session) {
     if (isSyncing) {
@@ -147,6 +211,15 @@ export function SessionDetail() {
     }
   };
 
+  const handleUpdateCollaborators = async (emails: string[]) => {
+    try {
+      await updateSession(session.id, { collaborators: emails });
+    } catch (err) {
+      handleError(err, 'Failed to update collaborators');
+      throw err;
+    }
+  };
+
   const handleSmartResume = async () => {
     setIsGenerating(true);
     setAiResponse(null);
@@ -199,12 +272,22 @@ export function SessionDetail() {
               size="sm"
               icon={isGenerating ? Loader2 : Sparkles}
               onClick={handleSmartResume}
-              disabled={isGenerating}
+              disabled={isGenerating || session.isConfidential}
               className={isGenerating ? 'animate-pulse' : ''}
+              title={session.isConfidential ? "Disabled for confidential sessions" : "Generate Smart Resume"}
             >
               {isGenerating ? 'Generating...' : 'Smart Resume'}
             </Button>
           </FeatureGate>
+          <Button
+            variant="outline"
+            size="sm"
+            icon={Share2}
+            onClick={() => setIsShareModalOpen(true)}
+            title="Share"
+          >
+            Share
+          </Button>
           <FeatureGate feature="pinned_sessions" inline>
             <Button
               variant="outline"
@@ -234,15 +317,17 @@ export function SessionDetail() {
           >
             Edit
           </Button>
-          <Button
-            variant="danger"
-            size="sm"
-            icon={Trash2}
-            onClick={() => setIsDeleteDialogOpen(true)}
-            title="Delete"
-          >
-            Delete
-          </Button>
+          {isOwner && (
+            <Button
+              variant="danger"
+              size="sm"
+              icon={Trash2}
+              onClick={() => setIsDeleteDialogOpen(true)}
+              title="Delete"
+            >
+              Delete
+            </Button>
+          )}
         </div>
       </PageHeader>
 
@@ -255,6 +340,14 @@ export function SessionDetail() {
         confirmLabel="Delete Session"
         variant="danger"
         isLoading={isDeleting}
+      />
+      
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        session={session}
+        onUpdateCollaborators={handleUpdateCollaborators}
+        isOwner={isOwner}
       />
 
       <AnimatePresence>
@@ -278,7 +371,7 @@ export function SessionDetail() {
                     <Badge variant="indigo" size="sm">Powered by Gemini</Badge>
                   </div>
                   <div className="prose prose-slate dark:prose-invert prose-sm max-w-none prose-headings:text-indigo-600 dark:prose-headings:text-indigo-400 prose-strong:text-indigo-700 dark:prose-strong:text-indigo-300">
-                    <Markdown>{aiResponse}</Markdown>
+                    <Markdown remarkPlugins={[remarkGfm]}>{aiResponse}</Markdown>
                   </div>
                 </div>
               </div>
@@ -321,6 +414,11 @@ export function SessionDetail() {
               <Badge variant="gray">
                 {session.category}
               </Badge>
+              {session.isConfidential && (
+                <Badge variant="amber" icon={ShieldAlert}>
+                  Confidential
+                </Badge>
+              )}
             </div>
 
             <div className="space-y-3">
@@ -343,6 +441,16 @@ export function SessionDetail() {
           <ResumeBox nextStep={session.nextStep} onResume={handleResume} />
 
           <div className="flex flex-wrap gap-4">
+            <FeatureGate feature="time_tracking" inline>
+              <Button
+                onClick={handleToggleTimer}
+                variant={isTracking ? "danger" : "outline"}
+                icon={isTracking ? Square : Play}
+                className={isTracking ? "animate-pulse" : "theme-surface"}
+              >
+                {isTracking ? `Stop Timer (${formatDuration(localDuration)})` : `Start Timer (${formatDuration(localDuration)})`}
+              </Button>
+            </FeatureGate>
             {session.status !== 'done' && (
               <Button 
                 onClick={handleMarkDone}
@@ -366,9 +474,9 @@ export function SessionDetail() {
           {session.notes && (
             <Card className="space-y-4">
               <h3 className="text-xs font-medium theme-text-secondary uppercase tracking-wider ml-1">Additional Notes</h3>
-              <p className="theme-text-primary leading-relaxed whitespace-pre-wrap">
-                {session.notes}
-              </p>
+              <div className="prose prose-slate dark:prose-invert prose-sm max-w-none theme-text-primary">
+                <Markdown remarkPlugins={[remarkGfm]}>{session.notes}</Markdown>
+              </div>
             </Card>
           )}
         </div>
@@ -431,6 +539,17 @@ export function SessionDetail() {
           <Card className="space-y-6">
             <h3 className="text-xs font-medium theme-text-secondary uppercase tracking-wider ml-1">Metadata</h3>
             <div className="space-y-4">
+              {session.dueDate && (
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-900/30 flex items-center justify-center text-rose-600 dark:text-rose-400">
+                    <Calendar className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-medium theme-text-secondary uppercase tracking-wider">Due Date</p>
+                    <p className="text-sm font-semibold text-rose-600 dark:text-rose-400">{format(new Date(session.dueDate), 'MMM d, yyyy')}</p>
+                  </div>
+                </div>
+              )}
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center theme-text-secondary">
                   <Calendar className="w-4 h-4" />
@@ -458,6 +577,17 @@ export function SessionDetail() {
                   <p className="font-mono text-xs theme-text-secondary">{session.id.slice(0, 12)}...</p>
                 </div>
               </div>
+              {session.collaborators && session.collaborators.length > 0 && (
+                <div className="pt-4 border-t theme-border flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                    <Users className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-medium theme-text-secondary uppercase tracking-wider">Collaborators</p>
+                    <p className="text-sm font-semibold theme-text-primary">{session.collaborators.length} {session.collaborators.length === 1 ? 'Person' : 'People'}</p>
+                  </div>
+                </div>
+              )}
             </div>
           </Card>
         </div>

@@ -181,21 +181,24 @@ export function Settings() {
           <div className="mt-8 pt-8 border-t theme-border">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-base font-semibold theme-text-primary">Simulate Pro access</p>
+                <p className="text-base font-semibold theme-text-primary">Simulate Plan Access</p>
                 <p className="text-sm theme-text-secondary">Developer tool to test feature gating without Stripe.</p>
               </div>
-              <button
-                onClick={() => isFree ? upgrade('pro') : downgrade()}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-                  !isFree ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm ${
-                    !isFree ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
+              <div className="relative">
+                <select
+                  value={currentPlan}
+                  onChange={(e) => upgrade(e.target.value as any)}
+                  className="px-4 py-2 bg-white dark:bg-slate-900 border theme-border rounded-lg text-sm font-medium theme-text-primary outline-none focus:ring-2 focus:ring-indigo-500/20 appearance-none cursor-pointer"
+                >
+                  <option value="free">Free Plan</option>
+                  <option value="plus">Plus Plan</option>
+                  <option value="premium">Premium Plan</option>
+                  <option value="pro">Pro Plan</option>
+                </select>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                  <ChevronRight className="w-4 h-4 rotate-90" />
+                </div>
+              </div>
             </div>
           </div>
         </div>

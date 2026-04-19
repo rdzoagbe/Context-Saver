@@ -564,10 +564,10 @@ export function Landing() {
             <h2 className="mt-4 text-3xl font-bold tracking-tight theme-text-primary md:text-5xl">Start free. Upgrade for continuity.</h2>
             <p className="mx-auto mt-4 max-w-2xl theme-text-secondary">Use Context Saver immediately in local mode. Unlock cloud sync and advanced organization when your workflow scales.</p>
           </div>
-          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-3">
-            <Card className="p-8 flex flex-col">
+          <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 md:grid-cols-4">
+            <Card className="p-8 flex flex-col theme-surface">
               <div className="flex-1">
-                <h3 className="text-lg font-bold theme-text-primary">Free</h3>
+                <h3 className="text-lg font-bold theme-text-primary">Basic</h3>
                 <p className="mt-3 text-4xl font-bold theme-text-primary">€0</p>
                 <p className="mt-1 text-sm theme-text-secondary">Local-only MVP</p>
                 <ul className="mt-6 space-y-3 text-sm theme-text-secondary">
@@ -581,39 +581,55 @@ export function Landing() {
                 <Button onClick={handleGetStarted} variant="outline" className="w-full">Get Started</Button>
               </div>
             </Card>
+            <Card className="p-8 flex flex-col theme-surface">
+              <div className="flex-1">
+                <h3 className="text-lg font-bold theme-text-primary">Plus</h3>
+                <p className="mt-3 text-4xl font-bold theme-text-primary">€5</p>
+                <p className="mt-1 text-sm theme-text-secondary">Advanced Organization</p>
+                <ul className="mt-6 space-y-3 text-sm theme-text-secondary">
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Everything in Basic</span></li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>AI Smart Resume</span></li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Productivity Analytics</span></li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Pinned sessions</span></li>
+                </ul>
+              </div>
+              <div className="mt-8">
+                <Button onClick={() => handleSignup('signup')} variant="outline" className="w-full">Upgrade to Plus</Button>
+              </div>
+            </Card>
+            <Card className="p-8 flex flex-col theme-surface">
+              <div className="flex-1">
+                <h3 className="text-lg font-bold theme-text-primary">Premium</h3>
+                <p className="mt-3 text-4xl font-bold theme-text-primary">€15</p>
+                <p className="mt-1 text-sm theme-text-secondary">Full Continuity</p>
+                <ul className="mt-6 space-y-3 text-sm theme-text-secondary">
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Everything in Plus</span></li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Time Tracking (Billable)</span></li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Session history restore</span></li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Cloud sync & backup</span></li>
+                </ul>
+              </div>
+              <div className="mt-8">
+                <Button onClick={() => handleSignup('trial')} variant="outline" className="w-full">Start 5-day Trial</Button>
+              </div>
+            </Card>
             <Card className="scale-[1.05] border-indigo-500 p-8 shadow-xl flex flex-col relative z-10 theme-surface">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                 <Badge className="border-indigo-100 bg-indigo-600 text-white shadow-lg">Most Popular</Badge>
               </div>
               <div className="flex-1">
-                <h3 className="mt-3 text-lg font-bold theme-text-primary">Plus</h3>
-                <p className="mt-3 text-4xl font-bold theme-text-primary">€5</p>
-                <p className="mt-1 text-sm theme-text-secondary">Advanced Organization</p>
+                <h3 className="mt-3 text-lg font-bold theme-text-primary">Pro</h3>
+                <p className="mt-3 text-4xl font-bold theme-text-primary">€25</p>
+                <p className="mt-1 text-sm theme-text-secondary">Team & Security</p>
                 <ul className="mt-6 space-y-3 text-sm theme-text-secondary">
-                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Everything in Free</span></li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Pinned sessions</span></li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Reusable templates</span></li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Recurring reminders</span></li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Everything in Premium</span></li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Attorney-Client Privilege</span></li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Cross-User Collaboration</span></li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Unlimited Team Shares</span></li>
                 </ul>
               </div>
               <div className="mt-8">
-                <Button onClick={() => handleSignup('signup')} className="w-full">Upgrade to Plus</Button>
-              </div>
-            </Card>
-            <Card className="p-8 flex flex-col">
-              <div className="flex-1">
-                <h3 className="text-lg font-bold theme-text-primary">Pro</h3>
-                <p className="mt-3 text-4xl font-bold theme-text-primary">€10</p>
-                <p className="mt-1 text-sm theme-text-secondary">Full Continuity</p>
-                <ul className="mt-6 space-y-3 text-sm theme-text-secondary">
-                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Everything in Plus</span></li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Cloud sync & backup</span></li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Cross-device access</span></li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-indigo-500" /> <span>Premium recovery tools</span></li>
-                </ul>
-              </div>
-              <div className="mt-8">
-                <Button onClick={() => handleSignup('trial')} variant="outline" className="w-full">Start 5-day Trial</Button>
+                <Button onClick={() => handleSignup('signup')} className="w-full">Upgrade to Pro</Button>
               </div>
             </Card>
           </div>

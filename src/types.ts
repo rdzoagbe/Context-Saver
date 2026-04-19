@@ -1,6 +1,6 @@
 export type SessionStatus = 'active' | 'archived' | 'done' | 'blocked';
 export type Priority = 'low' | 'medium' | 'high';
-export type PlanType = 'free' | 'plus' | 'pro';
+export type PlanType = 'free' | 'plus' | 'premium' | 'pro';
 
 export type Feature = 
   | 'pinned_sessions' 
@@ -10,7 +10,9 @@ export type Feature =
   | 'cloud_sync' 
   | 'history_restore' 
   | 'analytics'
-  | 'smart_resume';
+  | 'smart_resume'
+  | 'time_tracking'
+  | 'confidentiality';
 
 export interface SessionLink {
   id: string;
@@ -34,6 +36,11 @@ export interface Session {
   pinned: boolean;
   createdAt: number;
   updatedAt: number;
+  dueDate?: number;
+  duration?: number; // Time spent in seconds (billable hours)
+  isConfidential?: boolean; // Disables AI processing for attorney-client privilege
+  collaborators?: string[]; // Array of email addresses
+  userId?: string; // Adding userId for cross-collaboration querying
 }
 
 export interface UserPlan {

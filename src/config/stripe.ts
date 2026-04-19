@@ -14,15 +14,16 @@ export const stripePromise = STRIPE_PUBLIC_KEY
   : (console.warn('[Stripe] Public key is missing. Paid features will be limited.'), Promise.resolve(null));
 
 export const STRIPE_LINKS = {
-  plus: "https://buy.stripe.com/test_28EaEP9lj6Xj2eQ0SU4ZG00",
-  pro: "https://buy.stripe.com/test_5kQ6oz0ONbdzdXyatu4ZG01"
+  plus: "https://buy.stripe.com/test_28EaEP9lj6Xj2eQ0SU4ZG00", // €5
+  premium: "https://buy.stripe.com/test_5kQ6oz0ONbdzdXyatu4ZG01", // €15
+  pro: "https://buy.stripe.com/test_whateverPROis" // €25 - needs standard placeholder link for now
 } as const;
 
 export type StripePlan = keyof typeof STRIPE_LINKS;
 
 /**
  * Redirects the user to the Stripe Payment Link for the selected plan.
- * @param plan - The plan to redirect to ('plus' or 'pro')
+ * @param plan - The plan to redirect to ('plus', 'premium', or 'pro')
  * @param userId - The Firebase user ID to associate with the checkout session
  */
 export function redirectToCheckout(plan: StripePlan, userId?: string) {

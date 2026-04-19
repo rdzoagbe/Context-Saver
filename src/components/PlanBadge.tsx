@@ -18,10 +18,15 @@ export function PlanBadge({ plan, size = 'md' }: PlanBadgeProps) {
       icon: Shield,
       className: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 border-indigo-100 dark:border-indigo-900/50'
     },
+    premium: {
+      label: 'Premium',
+      icon: Sparkles,
+      className: 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400 border-amber-100 dark:border-amber-900/50'
+    },
     pro: {
       label: 'Pro',
       icon: Sparkles,
-      className: 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400 border-amber-100 dark:border-amber-900/50'
+      className: 'bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400 border-rose-100 dark:border-rose-900/50'
     }
   };
 

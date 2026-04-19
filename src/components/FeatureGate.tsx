@@ -24,6 +24,11 @@ export function FeatureGate({ feature, children, fallback, inline = false }: Fea
     return <>{fallback}</>;
   }
 
+  const isProFeature = feature === 'confidentiality';
+  const isPremiumFeature = feature === 'cloud_sync' || feature === 'history_restore' || feature === 'time_tracking';
+  
+  const targetPlan = isProFeature ? 'Pro' : isPremiumFeature ? 'Premium' : 'Plus';
+
   if (inline) {
     return (
       <Link 
@@ -32,13 +37,10 @@ export function FeatureGate({ feature, children, fallback, inline = false }: Fea
         className="inline-flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 font-semibold text-xs bg-indigo-50 dark:bg-indigo-900/20 px-2.5 py-1 rounded-md border border-indigo-100 dark:border-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors"
       >
         <Lock className="w-3 h-3" />
-        {feature === 'cloud_sync' ? 'Pro' : 'Plus'}
+        {targetPlan}
       </Link>
     );
   }
-
-  const isProFeature = feature === 'cloud_sync' || feature === 'history_restore' || feature === 'analytics';
-  const targetPlan = isProFeature ? 'Pro' : 'Plus';
 
   return (
     <div className="relative group overflow-hidden rounded-2xl border border-dashed theme-border bg-slate-50/50 dark:bg-slate-900/20 p-8 text-center">

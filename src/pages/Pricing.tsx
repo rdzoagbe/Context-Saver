@@ -72,11 +72,11 @@ export function Pricing() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 items-stretch max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-stretch max-w-7xl mx-auto">
         <PricingCard
-          title="Free"
+          title="Basic"
           price="€0"
-          description="Local-only sessions for focused individual work."
+          description="Local-only sessions for focused individual work and assignments."
           features={[
             'Local-only sessions',
             'Create, edit, archive, delete',
@@ -91,38 +91,51 @@ export function Pricing() {
         <PricingCard
           title="Plus"
           price="€5"
-          description="Advanced organization and priority workflows."
+          description="Advanced organization, AI synthesis, and team-level insights."
           features={[
-            'Everything in Free',
+            'Everything in Basic',
+            'AI Smart Resume',
+            'Productivity Analytics',
             'Pinned sessions',
-            'Templates',
-            'Recurring reminders',
-            'Advanced filters',
-            'Priority workflows'
+            'Templates & Reminders'
           ]}
-          highlight
           isCurrent={currentPlan === 'plus'}
           onUpgrade={() => handleUpgrade('plus')}
           ctaLabel={loadingPlan === 'plus' ? 'Redirecting...' : 'Upgrade to Plus'}
           disabled={!isStripeConfigured}
         />
         <PricingCard
-          title="Pro"
-          price="€10"
-          description="Future-proof your context with cloud sync and intelligence."
+          title="Premium"
+          price="€15"
+          description="Secure, billable, and cloud-synced for professional workflows."
           features={[
             'Everything in Plus',
-            'Account-based access',
+            'Time Tracking (Billable Hours)',
             'Cross-device sync',
             'Session history restore',
-            'Smart resume tools',
-            'Advanced analytics',
-            'Early access to new features'
+            'Advanced analytics'
           ]}
+          isCurrent={currentPlan === 'premium'}
+          onUpgrade={() => handleUpgrade('premium')}
+          ctaLabel={loadingPlan === 'premium' ? 'Redirecting...' : 'Upgrade to Premium'}
+          disabled={!isStripeConfigured}
+        />
+        <PricingCard
+          title="Pro"
+          price="€25"
+          description="Unrestricted collaboration, priority workflows, and total confidentiality."
+          features={[
+            'Everything in Premium',
+            'Attorney-Client Privilege Mode',
+            'Cross-User Collaboration',
+            'Unlimited Team Shares',
+            'Priority workflows'
+          ]}
+          highlight
           isCurrent={currentPlan === 'pro'}
           onUpgrade={() => handleUpgrade('pro')}
           ctaLabel={loadingPlan === 'pro' ? 'Redirecting...' : 'Upgrade to Pro'}
-          footerNote="Pro unlocks multi-device sync, AI-powered resume strategies, and deep analytics for your workflow."
+          footerNote="Pro unlocks strict confidentiality and enterprise sharing limits."
           disabled={!isStripeConfigured}
         />
       </div>

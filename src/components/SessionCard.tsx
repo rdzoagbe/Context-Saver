@@ -1,11 +1,10 @@
 import React, { memo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, ExternalLink, Pin, PinOff, CheckCircle2, AlertCircle, Archive, PlayCircle, Trash2 } from 'lucide-react';
+import { Clock, ExternalLink, Pin, PinOff, CheckCircle2, AlertCircle, Archive, PlayCircle, Trash2, ShieldAlert, Calendar, Timer, Users } from 'lucide-react';
 import { Session, SessionStatus, Priority } from '../types';
 import { Card } from './ui/Card';
 import { Badge } from './ui/Badge';
 import { ConfirmationDialog } from './ui/ConfirmationDialog';
-import { Button } from './ui/Button';
 
 interface SessionCardProps {
   session: Session;
@@ -38,6 +37,8 @@ export const SessionCard = memo(({ session, onTogglePin, onUpdateStatus, onDelet
     setIsDeleteDialogOpen(false);
   };
 
+  const isOverdue = session.dueDate && new Date(session.dueDate).getTime() < new Date().getTime();
+
   return (
     <>
       <Card 
@@ -60,6 +61,7 @@ export const SessionCard = memo(({ session, onTogglePin, onUpdateStatus, onDelet
                   ? 'bg-indigo-600 text-white shadow-indigo'
                   : 'bg-slate-50 dark:bg-slate-800 theme-text-secondary opacity-0 group-hover:opacity-100 hover:text-indigo-600 dark:hover:text-indigo-400'
               }`}
+              title={session.pinned ? "Unpin session" : "Pin session"}
             >
               {session.pinned ? <Pin className="w-4 h-4 fill-current" /> : <PinOff className="w-4 h-4" />}
             </button>
@@ -80,7 +82,7 @@ export const SessionCard = memo(({ session, onTogglePin, onUpdateStatus, onDelet
         </div>
 
         <Link to={`/session/${session.id}`} className="block p-6">
-        <div className="flex flex-wrap items-center gap-2 mb-4">
+        <div className="flex flex-wrap items-center gap-2 mb-4 pr-20">
           <Badge variant={statusConfig[session.status].variant} icon={StatusIcon} size="xs">
             {statusConfig[session.status].label}
           </Badge>
@@ -90,11 +92,26 @@ export const SessionCard = memo(({ session, onTogglePin, onUpdateStatus, onDelet
           <Badge variant="gray" size="xs">
             {session.category}
           </Badge>
+          {session.isConfidential && (
+            <Badge variant="amber" icon={ShieldAlert} size="xs">
+              Confidential
+            </Badge>
+          )}
         </div>
 
         <h3 className="text-lg font-semibold theme-text-primary mb-3 line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">
           {session.title}
         </h3>
+        
+        {session.dueDate && (
+          <div className="mb-3 flex items-center gap-1.5 text-xs font-medium">
+            <Calendar className={`w-3.5 h-3.5 ${isOverdue && statusConfig[session.status].label !== 'Done' ? 'text-rose-500' : 'theme-text-secondary'}`} />
+            <span className={isOverdue && statusConfig[session.status].label !== 'Done' ? 'text-rose-500 font-bold' : 'theme-text-secondary'}>
+              Due {new Date(session.dueDate).toLocaleDateString()}
+              {isOverdue && statusConfig[session.status].label !== 'Done' && ' (Overdue)'}
+            </span>
+          </div>
+        )}
 
         <div className="mb-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
           <p className="text-xs font-medium theme-text-secondary uppercase tracking-wider mb-1">Next Step</p>
@@ -105,12 +122,26 @@ export const SessionCard = memo(({ session, onTogglePin, onUpdateStatus, onDelet
 
         <div className="flex items-center justify-between mt-auto pt-4 border-t theme-border">
           <div className="flex items-center gap-4 theme-text-secondary">
-            <div className="flex items-center gap-1.5 text-xs font-medium">
+            <div className="flex items-center gap-1.5 text-xs font-medium" title="Last updated">
               <Clock className="w-3.5 h-3.5" />
               {new Date(session.updatedAt).toLocaleDateString()}
             </div>
-            {session.links.length > 0 && (
-              <div className="flex items-center gap-1.5 text-xs font-medium">
+            {(session.duration ?? 0) > 0 && (
+              <div className="flex items-center gap-1.5 text-xs font-medium" title="Tracked time">
+                <Timer className="w-3.5 h-3.5 text-indigo-500" />
+                <span className="text-indigo-600 dark:text-indigo-400">
+                  {Math.floor((session.duration || 0) / 60)}m
+                </span>
+              </div>
+            )}
+            {session.collaborators && session.collaborators.length > 0 && (
+              <div className="flex items-center gap-1.5 text-xs font-medium" title="Collaborators">
+                <Users className="w-3.5 h-3.5" />
+                {session.collaborators.length}
+              </div>
+            )}
+            {session.links?.length > 0 && (
+              <div className="flex items-center gap-1.5 text-xs font-medium" title="Links attached">
                 <ExternalLink className="w-3.5 h-3.5" />
                 {session.links.length}
               </div>

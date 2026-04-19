@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, Link as LinkIcon, Save, AlertCircle, Pin, PinOff, PlayCircle } from 'lucide-react';
+import { Plus, Trash2, Link as LinkIcon, Save, AlertCircle, Pin, PinOff, PlayCircle, Shield, ShieldAlert } from 'lucide-react';
 import { Session, SessionLink, Priority, SessionStatus } from '../types';
 import { sessionValidation } from '../utils/sessionValidation';
 import { normalizeUrl, isValidUrl } from '../utils/normalizeUrl';
@@ -28,6 +28,9 @@ export function SessionForm({ initialData, onSubmit, onCancel }: SessionFormProp
     status: initialData?.status || 'active' as SessionStatus,
     pinned: initialData?.pinned || false,
     links: initialData?.links || [] as SessionLink[],
+    dueDate: initialData?.dueDate ? new Date(initialData.dueDate).toISOString().split('T')[0] : '',
+    isConfidential: initialData?.isConfidential || false,
+    duration: initialData?.duration || 0,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -57,6 +60,7 @@ export function SessionForm({ initialData, onSubmit, onCancel }: SessionFormProp
       ...formData,
       tags: tagsArray,
       links: normalizedLinks,
+      dueDate: formData.dueDate ? new Date(formData.dueDate).getTime() : undefined,
     };
 
     const validation = sessionValidation.validate(dataToValidate);
@@ -133,13 +137,13 @@ export function SessionForm({ initialData, onSubmit, onCancel }: SessionFormProp
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-xs font-medium theme-text-secondary uppercase tracking-wider ml-1">Category</label>
+                <label className="text-xs font-medium theme-text-secondary uppercase tracking-wider ml-1">Category / Matter</label>
                 <input
                   type="text"
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   className="w-full px-4 py-3 bg-white dark:bg-slate-900 border theme-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-medium theme-text-primary placeholder:text-slate-400"
-                  placeholder="e.g., Work, Side Project"
+                  placeholder="e.g., Client Smith, Project X"
                 />
               </div>
               <div className="space-y-2">
@@ -158,6 +162,37 @@ export function SessionForm({ initialData, onSubmit, onCancel }: SessionFormProp
                     <Plus className="w-4 h-4 rotate-45" />
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-xs font-medium theme-text-secondary uppercase tracking-wider ml-1">Due Date / Deadline</label>
+                <input
+                  type="date"
+                  value={formData.dueDate}
+                  onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                  className="w-full px-4 py-3 bg-white dark:bg-slate-900 border theme-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm font-medium theme-text-primary placeholder:text-slate-400"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-medium theme-text-secondary uppercase tracking-wider ml-1">Confidentiality</label>
+                <FeatureGate feature="confidentiality" inline>
+                  <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 border theme-border rounded-xl">
+                    <div className="flex items-center gap-2">
+                      {formData.isConfidential ? <ShieldAlert className="w-4 h-4 text-amber-500" /> : <Shield className="w-4 h-4 text-slate-400" />}
+                      <span className="text-sm font-medium theme-text-primary">Confidential Mode</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, isConfidential: !formData.isConfidential })}
+                      className={`w-10 h-5 rounded-full transition-all relative ${formData.isConfidential ? 'bg-amber-500' : 'bg-slate-300 dark:bg-slate-700'}`}
+                    >
+                      <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all shadow-sm ${formData.isConfidential ? 'left-5' : 'left-0.5'}`} />
+                    </button>
+                  </div>
+                  <p className="text-[10px] theme-text-secondary ml-1 mt-1">Disables AI processing for this session.</p>
+                </FeatureGate>
               </div>
             </div>
 
