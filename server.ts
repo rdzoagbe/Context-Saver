@@ -25,8 +25,7 @@ async function startServer() {
   app.use(cors());
 
   // Stripe requires raw body for webhook signature verification
-  const LIVE_SECRET_KEY = ";
-  const stripeSecretKey = process.env.STRIPE_SECRET_KEY || LIVE_SECRET_KEY;
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
   let stripeClient: Stripe | null = null;
   

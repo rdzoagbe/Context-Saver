@@ -22,11 +22,8 @@ const sanitize = (val: string | undefined | null) => {
 const localKey = typeof window !== 'undefined' ? localStorage.getItem('FIREBASE_API_KEY_OVERRIDE') : null;
 const envKey = import.meta.env.VITE_FIREBASE_API_KEY;
 
-// USE THE VERIFIED KEY PROVIDED BY THE USER AS A BUILT-IN FALLBACK
-const USER_API_KEY = "AIzaSyAwXJvUm-1yd0tpaIgvycRfw3b_fUPOtww";
-
-// Priority: 1. Manual User Override (LocalStorage) | 2. Hardcoded Good Key | 3. AI Studio Env Var
-const finalApiKey = sanitize(localKey) || USER_API_KEY || sanitize(envKey);
+// Priority: 1. Manual User Override (LocalStorage) | 2. AI Studio Env Var
+const finalApiKey = sanitize(localKey) || sanitize(envKey);
 
 const decode = (b64: string) => typeof window !== 'undefined' ? atob(b64) : Buffer.from(b64, 'base64').toString();
 
@@ -73,6 +70,8 @@ import { getAnalytics, isSupported } from 'firebase/analytics';
 
 // Initialize App Check with reCAPTCHA Enterprise
 if (typeof window !== 'undefined') {
+  /* 
+  // Disable AppCheck as it is causing 403 PERMISSION_DENIED on Installations API
   const recaptchaKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LeZV78sAAAAADKBpgM0mst1jZfJgNu9W1XXzvk9";
   if (recaptchaKey && recaptchaKey !== 'undefined') {
     try {
@@ -85,19 +84,28 @@ if (typeof window !== 'undefined') {
       console.error("[Firebase] App Check initialization failed:", err);
     }
   }
+  */
 }
 
 // Initialize Analytics
 export const analytics = typeof window !== 'undefined' 
   ? isSupported()
-      .then(yes => yes ? getAnalytics(app) : null)
+      .then(yes => {
+        // Disabled Analytics to prevent Installations 403 error due to restrictive API Key
+        // return yes ? getAnalytics(app) : null;
+        return null;
+      })
       .catch(err => {
         console.error("Firebase Analytics initialization failed:", err);
         return null;
       })
   : null;
 
-export const db = getFirestore(app);
+import { initializeFirestore } from 'firebase/firestore';
+
+export const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true, // Fix for "Backend didn't respond within 10 seconds"
+});
 export const auth = getAuth(app);
 
 // Critical Constraint: Test connection on boot
