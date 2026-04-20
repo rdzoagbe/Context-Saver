@@ -30,12 +30,14 @@
     "win": {
       "target": "nsis",
       "icon": "public/icon.ico",
-      "publisherName": "MindMark Integration Inc."
+      "publisherName": "MindMark Integration Inc.",
+      "artifactName": "MindMark.exe"
     },
     "mac": {
       "target": "dmg",
       "icon": "public/icon.icns",
-      "category": "public.app-category.productivity"
+      "category": "public.app-category.productivity",
+      "artifactName": "MindMark.dmg"
     },
     "nsis": {
       "oneClick": false,
