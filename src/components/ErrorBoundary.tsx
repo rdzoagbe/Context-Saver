@@ -47,6 +47,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
     if (this.state.hasError) {
       // @ts-ignore
       const isFirestoreError = this.state.errorInfo?.includes('operationType') || this.state.error?.message.includes('operationType');
+      // @ts-ignore
+      const isConfigError = (window as any).__FIREBASE_CONFIG_ERROR__ === "Invalid API Key" || this.state.error?.message.toLowerCase().includes('api key not valid');
 
       return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
@@ -56,31 +58,44 @@ export class ErrorBoundary extends React.Component<Props, State> {
             </div>
             
             <h1 className="text-2xl font-bold text-slate-900 mb-2">
-              {isFirestoreError ? 'Database Connection Error' : 'Something went wrong'}
+              {isConfigError ? 'Configuration Error' : (isFirestoreError ? 'Database Connection Error' : 'Something went wrong')}
             </h1>
             
             <p className="text-slate-600 mb-8">
-              {isFirestoreError 
+              {isConfigError 
+                ? 'Your Firebase API Key is being rejected. This usually happens if the domain "mindmark.tech" has not been added to your Firebase Authorized Domains.'
+                : (isFirestoreError 
                 ? 'We encountered an issue communicating with our servers. Please check your connection and try again.'
-                : 'An unexpected error occurred. Our team has been notified and we are working to fix it.'}
+                : 'An unexpected error occurred. Our team has been notified and we are working to fix it.')}
             </p>
 
             <div className="grid grid-cols-2 gap-4">
-              <Button 
-                variant="outline" 
-                onClick={this.handleReload}
-                className="flex items-center justify-center gap-2"
-              >
-                <RefreshCw className="w-4 h-4" />
-                Retry
-              </Button>
-              <Button 
-                onClick={this.handleReset}
-                className="flex items-center justify-center gap-2"
-              >
-                <Home className="w-4 h-4" />
-                Go Home
-              </Button>
+              {isConfigError ? (
+                <Button 
+                  onClick={() => window.location.href = '#/login'}
+                  className="col-span-2 bg-indigo-600 hover:bg-indigo-700"
+                >
+                  Go to Login to Fix Key
+                </Button>
+              ) : (
+                <>
+                  <Button 
+                    variant="outline" 
+                    onClick={this.handleReload}
+                    className="flex items-center justify-center gap-2"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Retry
+                  </Button>
+                  <Button 
+                    onClick={this.handleReset}
+                    className="flex items-center justify-center gap-2"
+                  >
+                    <Home className="w-4 h-4" />
+                    Go Home
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>

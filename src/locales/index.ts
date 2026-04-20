@@ -488,17 +488,23 @@ export const TRANSLATIONS: Record<string, any> = {
         plus: {
           name: 'MindMark Plus',
           desc: 'Synchronisation d\'entrée de gamme pour la mobilité.',
-          features: ['Tout ce qui est dans Basic', 'Synchronisation Cloud (1 appareil)', 'Historique des sessions de base', 'Support par e-mail']
+          features: ['Tout ce qui est dans Basic', 'Synchronisation Cloud (1 appareil)', 'Historique des sessions de base', 'Support par e-mail'],
+          amount: 5,
+          currency: 'EUR'
         },
         pro: {
           name: 'MindMark Pro',
           desc: 'Le standard pour les pros à haute concentration.',
-          features: ['Tout ce qui est dans Plus', 'Synchronisation illimitée d\'appareils', 'Reprise intelligente par IA', 'Analyses de productivité avancées', 'Restauration de session prioritaire']
+          features: ['Tout ce qui est dans Plus', 'Synchronisation illimitée d\'appareils', 'Reprise intelligente par IA', 'Analyses de productivité avancées', 'Restauration de session prioritaire'],
+          amount: 10,
+          currency: 'EUR'
         },
         premium: {
           name: 'MindMark Premium',
           desc: 'Collaboration et mise à l\'échelle sans restriction.',
-          features: ['Tout ce qui est dans Pro', 'Mode Collaboration', 'Partages d\'équipe illimités', 'Systèmes de tags personnalisés', 'Support VIP dédié']
+          features: ['Tout ce qui est dans Pro', 'Mode Collaboration', 'Partages d\'équipe illimités', 'Systèmes de tags personnalisés', 'Support VIP dédié'],
+          amount: 25,
+          currency: 'EUR'
         }
       }
     },

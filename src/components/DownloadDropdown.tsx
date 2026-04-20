@@ -48,11 +48,10 @@ export function DownloadDropdown({ onWebClick, className = '', size = 'md' }: Do
       icon: Monitor,
       description: 'Download .exe installer',
       onClick: () => {
-        // In a real app, this would be a link to the release asset
-        alert('MindMark Desktop for Windows (.exe) starting download...');
+        window.open('https://github.com/rdzoagbe/MindMark/releases', '_blank');
         setIsOpen(false);
       },
-      badge: 'v1.0.0'
+      badge: 'Releases'
     },
     {
       id: 'mac',
@@ -60,39 +59,39 @@ export function DownloadDropdown({ onWebClick, className = '', size = 'md' }: Do
       icon: Apple,
       description: 'Download for Apple Silicon',
       onClick: () => {
-        alert('MindMark Desktop for macOS (.dmg) starting download...');
+        window.open('https://github.com/rdzoagbe/MindMark/releases', '_blank');
         setIsOpen(false);
       },
-      badge: 'v1.0.0'
+      badge: 'Releases'
     }
   ];
 
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
-      <div className="flex items-center">
+      <div className="flex items-center w-full">
         <Button 
           onClick={onWebClick}
           size={size}
-          className="rounded-r-none border-r border-white/20 px-8"
+          className="flex-1 sm:flex-initial rounded-r-none border-r border-white/20 px-8 h-14"
         >
           Get Started
         </Button>
         <Button
           onClick={() => setIsOpen(!isOpen)}
           size={size}
-          className="rounded-l-none px-3"
+          className="rounded-l-none px-4 h-14"
         >
-          <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
         </Button>
       </div>
 
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            initial={{ opacity: 0, y: 12, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="absolute top-full mt-2 right-0 w-72 z-50 theme-surface theme-border border rounded-2xl shadow-2xl overflow-hidden p-2"
+            exit={{ opacity: 0, y: 12, scale: 0.98 }}
+            className="absolute top-full mt-4 left-0 sm:left-auto sm:right-0 w-full sm:w-80 z-[100] theme-surface theme-border border rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden p-3"
           >
             <div className="px-3 py-2 border-b theme-border mb-1">
               <span className="text-[10px] font-black uppercase tracking-[0.2em] theme-text-secondary">Choose Platform</span>

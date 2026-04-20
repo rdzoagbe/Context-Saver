@@ -2,10 +2,36 @@ import { GoogleGenAI } from "@google/genai";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
 
-// Ensure the GenAI instance logic can use local api key. In browser typically proxying to backend is needed,
-// but for simplicity according to previous pattern we might use process.env.VITE_GEMINI_API_KEY.
-// Wait, is VITE_GEMINI_API_KEY available?
-const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+let aiInstance: GoogleGenAI | null = null;
+
+const getAI = () => {
+  if (aiInstance) return aiInstance;
+  
+  let key = import.meta.env.VITE_GEMINI_API_KEY;
+  
+  if (!key || key === 'undefined') {
+    key = process.env.GEMINI_API_KEY;
+  }
+
+  if (!key || key === 'undefined' && typeof window !== 'undefined') {
+    key = localStorage.getItem('GEMINI_API_KEY_OVERRIDE') || undefined;
+  }
+
+  if (!key || key === 'undefined' || key.trim() === '') {
+    return null;
+  }
+
+  aiInstance = new GoogleGenAI({ apiKey: key.trim() });
+  return aiInstance;
+};
+
+const ensureAI = () => {
+  const ai = getAI();
+  if (!ai) {
+    throw new Error('GEMINI_API_KEY is missing. Please set VITE_GEMINI_API_KEY in your hosting environment or provide an override in settings.');
+  }
+  return ai;
+};
 
 export const grammarService = {
   /**
@@ -37,13 +63,14 @@ export const grammarService = {
     }
 
     try {
+      const ai = ensureAI();
       const prompt = `You are an expert editor and translator. Please correct any grammatical errors in the following text, and translate it exactly into ${language}. Maintain the original tone, prioritize accurate technical terminology, and return ONLY the corrected/translated text with no acknowledging remarks:
 
 TWEET/TEXT:
 "${text}"`;
 
       const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-1.5-flash",
         contents: prompt,
       });
 

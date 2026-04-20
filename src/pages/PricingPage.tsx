@@ -49,12 +49,18 @@ export function PricingPage() {
   // Get current locale from translations for proper formatting
   const currentLocale = (t('locale') as unknown as string) || 'en-US';
 
-  const formatPrice = (amount: number, currency: string) => {
-    return new Intl.NumberFormat(currentLocale, {
-      style: 'currency',
-      currency: currency,
-      maximumFractionDigits: 0,
-    }).format(amount);
+  const formatPrice = (amount: number | undefined, currency: string | undefined) => {
+    if (amount === undefined || !currency) return '€--';
+    try {
+      return new Intl.NumberFormat(currentLocale, {
+        style: 'currency',
+        currency: currency,
+        maximumFractionDigits: 0,
+      }).format(amount);
+    } catch (e) {
+      console.error("Pricing format error:", e);
+      return `${currency} ${amount}`;
+    }
   };
 
   const handleSubscription = async (tier: PricingTier) => {

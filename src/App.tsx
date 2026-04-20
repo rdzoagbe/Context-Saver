@@ -28,6 +28,7 @@ const SecurityPolicy = lazy(() => import('./pages/SecurityPolicy').then(module =
 const AnalyticsDashboard = lazy(() => import('./pages/AnalyticsDashboard').then(module => ({ default: module.AnalyticsDashboard })));
 const HowItWorks = lazy(() => import('./pages/HowItWorks').then(module => ({ default: module.HowItWorks })));
 const Outcomes = lazy(() => import('./pages/Outcomes').then(module => ({ default: module.Outcomes })));
+const MeetingNotes = lazy(() => import('./pages/MeetingNotes').then(module => ({ default: module.MeetingNotes })));
 const Privacy = lazy(() => import('./pages/Privacy').then(module => ({ default: module.Privacy })));
 const Terms = lazy(() => import('./pages/Terms').then(module => ({ default: module.Terms })));
 
@@ -66,6 +67,7 @@ function AppContent() {
                 <Route path="/edit/:id" element={<EditSession />} />
                 <Route path="/session/:id" element={<SessionDetail />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/meeting-notes" element={<MeetingNotes />} />
                 <Route path="/analytics" element={<AnalyticsDashboard />} />
                 <Route path="/upgrade-success" element={<UpgradeSuccess />} />
               </Route>

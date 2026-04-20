@@ -10,7 +10,10 @@ type EventName =
   | 'guest_mode_started'
   | 'password_suggested'
   | 'password_reset_requested'
-  | 'upgrade_prompt_clicked';
+  | 'upgrade_prompt_clicked'
+  | 'meeting_summarization_started'
+  | 'meeting_summarization_success'
+  | 'meeting_summarization_failed';
 
 interface EventProperties {
   [key: string]: any;

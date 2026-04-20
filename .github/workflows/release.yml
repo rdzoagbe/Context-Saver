@@ -10,6 +10,11 @@ jobs:
   release:
     name: Build for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+<<<<<<< HEAD
+=======
+    permissions:
+      contents: write
+>>>>>>> 8556c318469c1f9233873398808a4c211523d23e
     strategy:
       matrix:
         os: [windows-latest, macos-latest]
@@ -32,4 +37,8 @@ jobs:
       - name: Build and Publish Electron App
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+<<<<<<< HEAD
         run: npx electron-builder --publish always
+=======
+        run: npx electron-builder --publish always
+>>>>>>> 8556c318469c1f9233873398808a4c211523d23e

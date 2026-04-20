@@ -362,6 +362,102 @@ export function Settings() {
           </div>
         </div>
 
+        {/* AI Configuration */}
+        <div className="p-8 sm:p-10">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <h2 className="text-xl font-bold theme-text-primary">AI Configuration</h2>
+          </div>
+          
+          <div className="space-y-4 p-8 bg-slate-50 dark:bg-slate-800/50 rounded-xl border theme-border">
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <p className="text-base font-semibold theme-text-primary">Gemini API Key</p>
+                <p className="text-sm theme-text-secondary">If the built-in AI key is not working on your custom domain, you can provide your own Google AI Studio key here.</p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input 
+                  type="password"
+                  placeholder="AIzaSy..."
+                  defaultValue={localStorage.getItem('GEMINI_API_KEY_OVERRIDE') || ''}
+                  onChange={(e) => {
+                    const val = e.target.value.trim();
+                    if (val) {
+                      localStorage.setItem('GEMINI_API_KEY_OVERRIDE', val);
+                    } else {
+                      localStorage.removeItem('GEMINI_API_KEY_OVERRIDE');
+                    }
+                  }}
+                  className="flex-1 px-4 py-2 bg-white dark:bg-slate-900 border theme-border rounded-lg text-sm theme-text-primary outline-none focus:ring-2 focus:ring-indigo-500/20"
+                />
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    localStorage.removeItem('GEMINI_API_KEY_OVERRIDE');
+                    window.location.reload();
+                  }}
+                >
+                  Reset
+                </Button>
+                <Button onClick={() => window.location.reload()}>
+                  Save & Reload
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Apps */}
+        <div className="p-8 sm:p-10 border-b theme-border">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+              <Monitor className="w-5 h-5" />
+            </div>
+            <h2 className="text-xl font-bold theme-text-primary">Desktop Apps</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-xl border theme-border flex flex-col justify-between">
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-base font-semibold theme-text-primary">Windows</h3>
+                  <Badge variant="emerald">Releases</Badge>
+                </div>
+                <p className="text-sm theme-text-secondary">Download the .exe installer for Windows 10/11.</p>
+              </div>
+              <Button 
+                variant="outline" 
+                className="w-full justify-center" 
+                icon={Download} 
+                onClick={() => window.open('https://github.com/rdzoagbe/MindMark/releases', '_blank')}
+              >
+                Download for Windows
+              </Button>
+            </div>
+
+            <div className="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-xl border theme-border flex flex-col justify-between">
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-base font-semibold theme-text-primary">macOS</h3>
+                  <Badge variant="emerald">Releases</Badge>
+                </div>
+                <p className="text-sm theme-text-secondary">Download the .dmg installer for Apple Silicon.</p>
+              </div>
+              <Button 
+                variant="outline" 
+                className="w-full justify-center" 
+                icon={Download} 
+                onClick={() => window.open('https://github.com/rdzoagbe/MindMark/releases', '_blank')}
+              >
+                Download for macOS
+              </Button>
+            </div>
+          </div>
+        </div>
+
         {/* Data Management */}
         <div className="p-8 sm:p-10">
           <div className="flex items-center gap-3 mb-8">

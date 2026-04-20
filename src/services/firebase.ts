@@ -65,9 +65,13 @@ if (typeof window !== 'undefined') {
         return;
       }
 
-      if (error?.message?.includes('API key not valid')) {
-        console.error("[Firebase] Google rejected your API key. It is currently invalid.");
+      if (error?.message?.toLowerCase().includes('api key not valid')) {
+        console.error("[Firebase] Google rejected your API key. It is currently invalid or restricted from this domain.");
         (window as any).__FIREBASE_CONFIG_ERROR__ = "Invalid API Key";
+        // Force the app to show the login/override screen if we are on a login-required path
+        if (window.location.hash.includes('dashboard') || window.location.hash.includes('create')) {
+          window.dispatchEvent(new CustomEvent('FIREBASE_AUTH_ERROR', { detail: 'API_KEY_INVALID' }));
+        }
       } else if (error?.message?.includes('client is offline')) {
         console.error("[Firebase] Client is offline. Firestore might be blocked by your network or misconfigured.");
       } else {

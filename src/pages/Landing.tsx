@@ -80,8 +80,8 @@ export function Landing() {
 
       <main>
         {/* Hero Section */}
-        <section className="relative pt-32 pb-20 overflow-hidden">
-          <div className="absolute inset-0 -z-10 pointer-events-none">
+        <section className="relative pt-32 pb-20">
+          <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-96 w-full max-w-4xl bg-indigo-500/5 blur-[120px]" />
           </div>
 

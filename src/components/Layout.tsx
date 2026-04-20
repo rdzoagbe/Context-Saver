@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, PlusCircle, Settings, BookMarked, Sparkles, BarChart3, ChevronLeft, User, LogOut } from 'lucide-react';
+import { Home, PlusCircle, Settings, BookMarked, Sparkles, BarChart3, ChevronLeft, User, LogOut, Mic, Download } from 'lucide-react';
 import { usePlan } from '../hooks/usePlan';
 import { useAuth } from '../hooks/useAuth';
 import { signOut } from '../services/authService';
@@ -8,20 +8,19 @@ import { PlanBadge } from './PlanBadge';
 import { SyncIndicator } from './SyncIndicator';
 import { QuickCapture } from './QuickCapture';
 import { MigrationModal } from './MigrationModal';
-import { FeatureGate } from './FeatureGate';
 import { useSessions } from '../contexts/SessionContext';
-import { NotificationBell } from './ui/NotificationBell';
 import { GlobalLanguageSelector } from './GlobalLanguageSelector';
+import { Button } from './ui/Button';
 
 import { useLanguage } from '../hooks/useLanguage';
 
 const NAV_TRANSLATIONS: Record<string, any> = {
-  English: { dashboard: 'Dashboard', create: 'New Session', analytics: 'Analytics', pricing: 'Plans', settings: 'Settings', signOut: 'Sign Out' },
-  French: { dashboard: 'Tableau', create: 'Nouvelle Session', analytics: 'Analyses', pricing: 'Forfaits', settings: 'Paramètres', signOut: 'Déconnexion' },
-  Spanish: { dashboard: 'Panel', create: 'Nueva Sesión', analytics: 'Análisis', pricing: 'Planes', settings: 'Ajustes', signOut: 'Cerrar sesión' },
-  Portuguese: { dashboard: 'Painel', create: 'Nova Sessão', analytics: 'Análise', pricing: 'Planos', settings: 'Configurações', signOut: 'Sair' },
-  Chinese: { dashboard: '仪表板', create: '新会话', analytics: '分析', pricing: '计划', settings: '设置', signOut: '登出' },
-  German: { dashboard: 'Dashboard', create: 'Neue Sitzung', analytics: 'Analytik', pricing: 'Pläne', settings: 'Einstellungen', signOut: 'Abmelden' }
+  English: { dashboard: 'Dashboard', create: 'New Session', analytics: 'Analytics', meetings: 'Meetings', pricing: 'Plans', settings: 'Settings', signOut: 'Sign Out' },
+  French: { dashboard: 'Tableau', create: 'Nouvelle Session', analytics: 'Analyses', meetings: 'Réunions', pricing: 'Forfaits', settings: 'Paramètres', signOut: 'Déconnexion' },
+  Spanish: { dashboard: 'Panel', create: 'Nueva Sesión', analytics: 'Análisis', meetings: 'Reuniones', pricing: 'Planes', settings: 'Ajustes', signOut: 'Cerrar sesión' },
+  Portuguese: { dashboard: 'Painel', create: 'Nova Sessão', analytics: 'Análise', meetings: 'Reuniões', pricing: 'Planos', settings: 'Configurações', signOut: 'Sair' },
+  Chinese: { dashboard: '仪表板', create: '新会话', analytics: '分析', meetings: '会议', pricing: '计划', settings: '设置', signOut: '登出' },
+  German: { dashboard: 'Dashboard', create: 'Neue Sitzung', analytics: 'Analytik', meetings: 'Besprechungen', pricing: 'Pläne', settings: 'Einstellungen', signOut: 'Abmelden' }
 };
 
 export function Layout() {
@@ -47,6 +46,7 @@ export function Layout() {
   const navItems = [
     { path: '/dashboard', icon: Home, label: t.dashboard },
     { path: '/create', icon: PlusCircle, label: t.create },
+    { path: '/meeting-notes', icon: Mic, label: t.meetings },
     { path: '/analytics', icon: BarChart3, label: t.analytics, proOnly: true },
     { path: '/pricing', icon: Sparkles, label: t.pricing, highlight: isFree },
     { path: '/settings', icon: Settings, label: t.settings },
@@ -57,7 +57,7 @@ export function Layout() {
       {/* Sidebar (Desktop) */}
       <aside className="hidden sm:flex flex-col w-64 border-r theme-border theme-surface backdrop-blur-xl sticky top-0 h-screen">
         <div className="p-6 flex items-center gap-3">
-          <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-3 text-indigo-600 dark:text-indigo-400 font-bold text-xl tracking-tight hover:opacity-80 transition-all active:scale-95">
+          <Link to="/dashboard" className="flex items-center gap-3 text-indigo-600 dark:text-indigo-400 font-bold text-xl tracking-tight hover:opacity-80 transition-all active:scale-95">
             <div className="w-8 h-8 bg-indigo-600 dark:bg-indigo-500 rounded-lg flex items-center justify-center text-white shadow-sm">
               <BookMarked className="w-5 h-5" />
             </div>
@@ -132,7 +132,7 @@ export function Layout() {
                 <ChevronLeft className="w-5 h-5" />
               </button>
             )}
-            <Link to={isAuthenticated ? "/dashboard" : "/"} className="sm:hidden flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xl tracking-tight">
+            <Link to="/dashboard" className="sm:hidden flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xl tracking-tight">
               <div className="w-8 h-8 bg-indigo-600 dark:bg-indigo-500 rounded-lg flex items-center justify-center text-white shadow-sm">
                 <BookMarked className="w-5 h-5" />
               </div>
@@ -141,9 +141,14 @@ export function Layout() {
           </div>
           <div className="flex items-center gap-3">
             <GlobalLanguageSelector />
-            <FeatureGate feature="pinned_sessions" inline>
-               <NotificationBell />
-            </FeatureGate>
+            <Button
+              variant="outline"
+              size="sm"
+              icon={Download}
+              onClick={() => window.open('https://github.com/rdzoagbe/MindMark/releases', '_blank')}
+            >
+              Get Desktop App
+            </Button>
             {isAuthenticated && (
               <div className="sm:hidden w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-sm">
                 {user?.photoURL ? (
@@ -153,7 +158,6 @@ export function Layout() {
                 )}
               </div>
             )}
-            <PlanBadge plan={currentPlan} size="sm" />
           </div>
         </header>
 

@@ -14,8 +14,8 @@ export function SEOManager() {
     const path = location.pathname;
 
     if (path === '/') {
-      title = `MindMark | ${t('landing.hero.title')}`;
-      description = t('landing.hero.subtitle');
+      title = `MindMark | ${t('landing.title')} ${t('landing.titleHighlight')}`;
+      description = t('landing.desc');
     } else if (path === '/pricing') {
       title = `Pricing | MindMark`;
       description = t('pricing.subtitle');
