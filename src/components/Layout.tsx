@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, PlusCircle, Settings, BookMarked, Sparkles, BarChart3, ChevronLeft, User, LogOut, Mic } from 'lucide-react';
+import { Home, PlusCircle, Settings, BookMarked, Sparkles, BarChart3, ChevronLeft, User, LogOut, Mic, Download } from 'lucide-react';
 import { usePlan } from '../hooks/usePlan';
 import { useAuth } from '../hooks/useAuth';
 import { signOut } from '../services/authService';
@@ -8,10 +8,9 @@ import { PlanBadge } from './PlanBadge';
 import { SyncIndicator } from './SyncIndicator';
 import { QuickCapture } from './QuickCapture';
 import { MigrationModal } from './MigrationModal';
-import { FeatureGate } from './FeatureGate';
 import { useSessions } from '../contexts/SessionContext';
-import { NotificationBell } from './ui/NotificationBell';
 import { GlobalLanguageSelector } from './GlobalLanguageSelector';
+import { Button } from './ui/Button';
 
 import { useLanguage } from '../hooks/useLanguage';
 
@@ -142,9 +141,14 @@ export function Layout() {
           </div>
           <div className="flex items-center gap-3">
             <GlobalLanguageSelector />
-            <FeatureGate feature="pinned_sessions" inline>
-               <NotificationBell />
-            </FeatureGate>
+            <Button
+              variant="outline"
+              size="sm"
+              icon={Download}
+              onClick={() => window.open('https://github.com/rdzoagbe/MindMark/releases', '_blank')}
+            >
+              Get Desktop App
+            </Button>
             {isAuthenticated && (
               <div className="sm:hidden w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-sm">
                 {user?.photoURL ? (
@@ -154,7 +158,6 @@ export function Layout() {
                 )}
               </div>
             )}
-            <PlanBadge plan={currentPlan} size="sm" />
           </div>
         </header>
 
