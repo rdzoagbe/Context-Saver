@@ -424,7 +424,7 @@ export function Settings() {
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-base font-semibold theme-text-primary">Windows</h3>
-                  <Badge variant="emerald">Latest</Badge>
+                  <Badge variant="emerald">Releases</Badge>
                 </div>
                 <p className="text-sm theme-text-secondary">Download the .exe installer for Windows 10/11.</p>
               </div>
@@ -432,7 +432,7 @@ export function Settings() {
                 variant="outline" 
                 className="w-full justify-center" 
                 icon={Download} 
-                onClick={() => window.location.href = 'https://github.com/rdzoagbe/MindMark/releases/latest/download/MindMark.exe'}
+                onClick={() => window.open('https://github.com/rdzoagbe/MindMark/releases', '_blank')}
               >
                 Download for Windows
               </Button>
@@ -442,7 +442,7 @@ export function Settings() {
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-base font-semibold theme-text-primary">macOS</h3>
-                  <Badge variant="emerald">Latest</Badge>
+                  <Badge variant="emerald">Releases</Badge>
                 </div>
                 <p className="text-sm theme-text-secondary">Download the .dmg installer for Apple Silicon.</p>
               </div>
@@ -450,7 +450,7 @@ export function Settings() {
                 variant="outline" 
                 className="w-full justify-center" 
                 icon={Download} 
-                onClick={() => window.location.href = 'https://github.com/rdzoagbe/MindMark/releases/latest/download/MindMark.dmg'}
+                onClick={() => window.open('https://github.com/rdzoagbe/MindMark/releases', '_blank')}
               >
                 Download for macOS
               </Button>
