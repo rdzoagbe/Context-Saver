@@ -57,19 +57,33 @@ export function SessionForm({ initialData, onSubmit, onCancel }: SessionFormProp
           setFormData(prev => ({ ...prev, title: autoTitle }));
         }
 
-        // 2. Read Clipboard
-        const clipboardText = await navigator.clipboard.readText();
-        if (clipboardText) {
-          if (isValidUrl(clipboardText)) {
-            // If clipboard is a URL, add it as a link
-             setFormData(prev => ({
-              ...prev,
-              links: [...prev.links, { id: crypto.randomUUID(), label: 'Harvested Link', url: clipboardText, comment: 'Auto-captured from clipboard' }],
-              pauseReason: `Researching ${clipboardText}`
-            }));
-          } else if (clipboardText.length > 5 && !formData.pauseReason) {
-             setFormData(prev => ({ ...prev, pauseReason: clipboardText.slice(0, 100) }));
+        // 2. Read Clipboard cleanly (browsers easily throw if not focused)
+        try {
+          // Check for clipboard support first
+          if (navigator.clipboard && navigator.clipboard.readText) {
+            // Document MUST be focused for this to work in most browsers without prompt
+            if (document.hasFocus()) {
+              const clipboardText = await navigator.clipboard.readText();
+              if (clipboardText) {
+                if (isValidUrl(clipboardText)) {
+                  // If clipboard is a URL, add it as a link
+                   setFormData(prev => ({
+                    ...prev,
+                    links: [...prev.links, { id: crypto.randomUUID(), label: 'Harvested Link', url: clipboardText, comment: 'Auto-captured from clipboard' }],
+                    pauseReason: prev.pauseReason || `Researching ${clipboardText}` // Don't override if already set
+                  }));
+                } else if (clipboardText.length > 5 && !formData.pauseReason) {
+                   setFormData(prev => ({ ...prev, pauseReason: clipboardText.slice(0, 100) }));
+                }
+              }
+            } else {
+              console.log('Clipboard harvesting skipped: Document not focused');
+            }
           }
+        } catch (clipboardErr) {
+          // This is expected if the user hasn't granted permission or document loses focus mid-read.
+          // We downgrade this from a warning to a debug log to prevent scaring users in the console.
+          console.log('Clipboard harvesting unavailable silently:', clipboardErr);
         }
       } catch (err) {
         console.warn('Clipboard access denied or unavailable:', err);
