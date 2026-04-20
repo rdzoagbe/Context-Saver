@@ -36,10 +36,8 @@ function createWindow() {
     show: false,
   });
 
-  // Load from local server for Auth support
   mainWindow.loadURL('http://localhost:3000');
 
-  // SSO Fix: Open Google login in system browser
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith('https://accounts.google.com')) {
       shell.openExternal(url);
@@ -69,7 +67,6 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
-// IPC Handlers
 ipcMain.handle('get-active-window', async () => {
   return await getActiveWindowTitle();
 });
