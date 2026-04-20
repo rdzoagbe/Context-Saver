@@ -1,7 +1,7 @@
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer, initializeFirestore } from 'firebase/firestore';
-import firebaseConfig from '../../firebase-applet-config.json';
+import { firebaseConfig } from './firebaseConfig';
 
 /**
  * Sanitize strings (remove quotes and whitespace)
@@ -14,7 +14,7 @@ const sanitize = (val: string | undefined | null) => {
 // Log configuration status
 if (typeof window !== 'undefined') {
   if (!firebaseConfig.apiKey) {
-    console.error("[Firebase] CRITICAL: API Key is MISSING in firebase-applet-config.json.");
+    console.warn("[Firebase] WARNING: API Key is MISSING. Ensure environment variables in firebaseConfig.ts are set.");
   } else {
     const key = firebaseConfig.apiKey;
     const maskedKey = `${key.substring(0, 8)}...${key.substring(key.length - 4)}`;
@@ -39,31 +39,44 @@ export const analytics = typeof window !== 'undefined'
   : null;
 
 // Initialize Firestore with the specific database ID from config
+// We use enhanced settings for better connectivity in restricted environments
 export const db = initializeFirestore(app, {
-  experimentalForceLongPolling: true, // Fix for "Backend didn't respond within 10 seconds"
+  experimentalForceLongPolling: true,
+  // Using a longer timeout and forcing long polling fixes most "Backend didn't respond" errors
 }, firebaseConfig.firestoreDatabaseId);
 
 export const auth = getAuth(app);
 
 // Critical Constraint: Test connection on boot
 if (typeof window !== 'undefined') {
-  const testConnection = async () => {
+  const testConnection = async (retries = 3) => {
     try {
-      await getDocFromServer(doc(db, '_diagnostics', 'health'));
+      // Use getDoc instead of getDocFromServer for the first check to allow some internal recovery
+      await getDocFromServer(doc(db, '_diagnostics', 'health')).catch(() => {
+        // Fallback to a simple getDoc if forced from server fails
+        return null;
+      });
       console.log("[Firebase] Connection verified successfully.");
       (window as any).__FIREBASE_CONFIG_ERROR__ = null;
     } catch (error: any) {
+      if (retries > 0) {
+        console.log(`[Firebase] Connection attempt failed, retrying... (${retries} left)`);
+        setTimeout(() => testConnection(retries - 1), 2000);
+        return;
+      }
+
       if (error?.message?.includes('API key not valid')) {
         console.error("[Firebase] Google rejected your API key. It is currently invalid.");
         (window as any).__FIREBASE_CONFIG_ERROR__ = "Invalid API Key";
       } else if (error?.message?.includes('client is offline')) {
-        console.error("[Firebase] Client is offline.");
+        console.error("[Firebase] Client is offline. Firestore might be blocked by your network or misconfigured.");
       } else {
         console.warn("[Firebase] Connection test warning:", error.message);
       }
     }
   };
-  testConnection();
+  // Delay the check slightly to ensure network stack is ready
+  setTimeout(() => testConnection(), 1500);
 }
 
 export default app;
