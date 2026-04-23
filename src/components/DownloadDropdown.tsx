@@ -10,6 +10,10 @@ import {
 } from 'lucide-react';
 import { Button } from './ui/Button';
 
+// Update this version string when you publish a new release
+const RELEASE_VERSION = 'v1.0.1';
+const RELEASE_BASE = `https://github.com/rdzoagbe/MindMark/releases/download/${RELEASE_VERSION}`;
+
 interface DownloadDropdownProps {
   onWebClick?: () => void;
   className?: string;
@@ -32,6 +36,16 @@ export function DownloadDropdown({ onWebClick, className = '', size = 'md', vari
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleDirectDownload = (filename: string) => {
+    const link = document.createElement('a');
+    link.href = `${RELEASE_BASE}/${filename}`;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setIsOpen(false);
+  };
+
   const options = [
     {
       id: 'web',
@@ -39,7 +53,7 @@ export function DownloadDropdown({ onWebClick, className = '', size = 'md', vari
       icon: Globe,
       description: 'Use directly in your browser',
       onClick: () => {
-        onWebClick();
+        onWebClick?.();
         setIsOpen(false);
       },
       badge: 'Immediate'
@@ -48,23 +62,17 @@ export function DownloadDropdown({ onWebClick, className = '', size = 'md', vari
       id: 'windows',
       label: 'Windows App',
       icon: Monitor,
-      description: 'Download .exe installer',
-      onClick: () => {
-        window.open('https://github.com/rdzoagbe/MindMark/releases', '_blank');
-        setIsOpen(false);
-      },
-      badge: 'Releases'
+      description: 'Download .exe installer (~110 MB)',
+      onClick: () => handleDirectDownload('MindMark.exe'),
+      badge: 'Direct'
     },
     {
       id: 'mac',
       label: 'macOS App',
       icon: Apple,
-      description: 'Download for Apple Silicon',
-      onClick: () => {
-        window.open('https://github.com/rdzoagbe/MindMark/releases', '_blank');
-        setIsOpen(false);
-      },
-      badge: 'Releases'
+      description: 'Download .dmg for Apple Silicon (~147 MB)',
+      onClick: () => handleDirectDownload('MindMark.dmg'),
+      badge: 'Direct'
     }
   ];
 
