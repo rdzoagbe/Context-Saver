@@ -11,7 +11,7 @@ import {
 import { Button } from './ui/Button';
 
 // Update this version string when you publish a new release
-const RELEASE_VERSION = 'v1.0.1';
+const RELEASE_VERSION = 'v1.0.3';
 const RELEASE_BASE = `https://github.com/rdzoagbe/MindMark/releases/download/${RELEASE_VERSION}`;
 
 interface DownloadDropdownProps {
